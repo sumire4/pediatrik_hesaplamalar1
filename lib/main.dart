@@ -1,96 +1,250 @@
 import 'package:flutter/material.dart';
+import 'ekranlar/adrenalin_dozu_hesaplama.dart';
+import 'ekranlar/anyon_gap_hesaplama.dart';
+import 'ekranlar/apgar_skoru_hesaplama.dart';
+import 'ekranlar/duzeltilmis_kalsiyum.dart';
+import 'ekranlar/duzeltilmis_qt_hesaplama.dart';
+import 'ekranlar/duzeltilmis_sodyum_hesaplama.dart';
+import 'ekranlar/gfr_hesaplama.dart';
+import 'ekranlar/glaskow_koma_hesaplama.dart';
+import 'ekranlar/gunluk_kalori.dart';
+import 'ekranlar/jreatin_atilimi_hesaplama.dart';
+import 'ekranlar/retikulosit_hesaplama.dart';
+import 'ekranlar/sodyum_fraksiyonel_atılım.dart';
+import 'ekranlar/tibuler_fosfor_reabsorbisyonu.dart';
+import 'ekranlar/vucut_kitle_hesaplama.dart';
+import 'ekranlar/vucut_yuzey_sıvı_hesaplama.dart';
+import 'ekranlar/yasa_gore_endotrakeal.dart';
+import 'ekranlar/yenidogan_yuzeyalanı_mayiihtiyaci.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MedicalCalculationApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MedicalCalculationApp extends StatelessWidget {
+  const MedicalCalculationApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Pediatrik Hesaplamalar',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final List<String> calculations = const [
+    'Adrenalin Dozu Hesaplama',
+    'Anyon Gap Hesaplama',
+    'Apgar Skoru Hesaplama',
+    'Düzeltilmiş Kalsiyum',
+    'Düzeltilmiş Sodyum Hesaplama',
+    'Düzeltilmiş QT Hesaplama',
+    'Düzeltilmiş Retikülosit Hesaplama',
+    'Yaşa Göre Endotrakeal Tüp Hesaplama',
+    'Sodyum Fraksiyonel Atılım Hesaplama',
+    'GFR Hesaplama (Kreatinin Klerensi)',
+    'Glaskow Koma Skalası Hesaplama',
+    'Kreatinin Atılımı ve Sıvı Dengesi Hesaplama',
+    'Tübüler Fosfor Reabsorbsiyonu',
+    'Vücut Kitle İndeksi (BMI) Hesaplama',
+    'Vücut Yüzey Alanı ve Sıvı Miktarı Hesaplama',
+    'Günlük Kalori Hesaplama',
+    'Yenidoğan Yüzey Alanı ve Mayi İhtiyacı'
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double imageHeight = screenHeight * 0.4; // Resim yüksekliği, ekranın %40'ı
+
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Pediatrik Hesaplamalar'),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: calculations.length + 1, // +1 resim için
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            // En üstte resim
+            return SizedBox(
+              height: imageHeight,
+              width: double.infinity,
+              child: Image.asset(
+                'assets/images/ust_resim.png', // Buraya resim yolunu koy
+                fit: BoxFit.cover,
+              ),
+            );
+          }
+
+          final calculation = calculations[index - 1];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 1,
+              child: ListTile(
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                title: Text(
+                  calculation,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                trailing: CircleAvatar(
+                  backgroundColor: Colors.teal[100],
+                  radius: 16,
+                  child: const Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                onTap: () {
+                  // Burada eski if'ler yerine switch-case ya da başka yapı da olabilir
+                  if (calculation == 'Adrenalin Dozu Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AdrenalinHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Anyon Gap Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AnyonGapHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Apgar Skoru Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ApgarSkoruHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Düzeltilmiş Kalsiyum') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                        const DuzeltilmisKalsiyumHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Düzeltilmiş Sodyum Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                        const DuzeltilmisSodyumHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Düzeltilmiş QT Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                        const DuzeltilmisQTHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Düzeltilmiş Retikülosit Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                        const DuzeltilmisRetikulositHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Yaşa Göre Endotrakeal Tüp Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const EndotrakealTupHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Sodyum Fraksiyonel Atılım Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                        const SodyumFraksiyonelAtilimScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'GFR Hesaplama (Kreatinin Klerensi)') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GfrHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Glaskow Koma Skalası Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GlaskowKomaSkalasiScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Kreatinin Atılımı ve Sıvı Dengesi Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const KreatininSiviDengesiScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Tübüler Fosfor Reabsorbsiyonu') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                        const TubulerFosforReabsorbsiyonuScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Vücut Kitle İndeksi (BMI) Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BmiHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Vücut Yüzey Alanı ve Sıvı Miktarı Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VucutYuzeyAlaniVeSiviScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Günlük Kalori Hesaplama') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const GunlukKaloriHesaplamaScreen(),
+                      ),
+                    );
+                  } else if (calculation == 'Yenidoğan Yüzey Alanı ve Mayi İhtiyacı') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const YenidoganMayiHesaplamaScreen(),
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+          );
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
