@@ -151,9 +151,37 @@ class _GunlukKaloriHesaplamaScreenState extends State<GunlukKaloriHesaplamaScree
               _buildTextField('Cuprotein', _cuproteinController),
               _buildTextField('Kilo (kg)', _kiloController),
               const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _hesapla,
-                child: const Text('Hesapla'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: _hesapla,
+                    child: const Text('Hesapla'),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    tooltip: 'Hesaplama Bilgisi',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Hesaplama Bilgisi'),
+                          content: const Text(
+                            'Günlük Kalori : Kalori = [(Primer × 0.4) + (Veli̇p × 0.9) + (Dekstroz × 0.4) + (Mama × 0.7) + (Aminosol × 0.67) + (Suplement × 20) + (Cuprotein × 3.875)] × Kilo şeklinde hesaplanır.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Kapat'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

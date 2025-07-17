@@ -15,7 +15,9 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
 
   final List<double> _konsantrasyonlar = [0.25, 0.5, 1.0];
 
-  void _hesapla() {
+  Future<void> _hesapla() async {
+    FocusScope.of(context).unfocus();
+    await Future.delayed(const Duration(milliseconds: 100));
     String girilenKilo = _kiloController.text.replaceAll(',', '.');
     double? kilo = double.tryParse(girilenKilo);
 
@@ -87,8 +89,10 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
+                      onPressed: () async {
+                        FocusScope.of(context).unfocus();
+                        await Future.delayed(const Duration(milliseconds: 200));
+                        if (mounted) Navigator.of(context).pop();
                       },
                       child: const Text('Kapat'),
                     ),
@@ -111,81 +115,114 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _kiloController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Kilo (kg)',
-                border: OutlineInputBorder(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: _kiloController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Kilo (kg)',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Konsantrasyon Seçin:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              const SizedBox(height: 16),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Konsantrasyon Seçin:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Column(
-              children: _konsantrasyonlar.map((value) {
-                return RadioListTile<double>(
-                  title: Text('$value mg/ml'),
-                  value: value,
-                  groupValue: _selectedKonsantrasyon,
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedKonsantrasyon = newValue;
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.shade100,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.shade100),
+              Column(
+                children: _konsantrasyonlar.map((value) {
+                  return RadioListTile<double>(
+                    title: Text('$value mg/ml'),
+                    value: value,
+                    groupValue: _selectedKonsantrasyon,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedKonsantrasyon = newValue;
+                      });
+                    },
+                  );
+                }).toList(),
               ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.warning_amber_rounded,
-                    size: 60,
-                    color: Colors.white60,
+                  ElevatedButton(
+                    onPressed: _hesapla,
+                    child: const Text('Hesapla'),
                   ),
                   const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'Her hasta için en iyi tedavi şeklini, en doğru ilaçları ve dozları belirlemek uygulamayı yapan hekimin sorumluluğundadır',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    tooltip: 'Hesaplama Bilgisi',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Hesaplama Bilgisi'),
+                          content: const Text(
+                            'Adrenalin dozu: 0.01 mg/kg olacak şekilde hesaplanır.\n'
+                                'Hacim ise: 0.1 ml/kg olarak belirlenmiştir.\n\n'
+                                'Örneğin: 10 kg’lık bir hasta için doz 0.1 mg, hacim ise 1 ml olur.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Kapat'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _sonuc,
-              style: const TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
-          ],
+
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade100),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 60,
+                      color: Colors.white60,
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'Her hasta için en iyi tedavi şeklini, en doğru ilaçları ve dozları belirlemek uygulamayı yapan hekimin sorumluluğundadır',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                _sonuc,
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

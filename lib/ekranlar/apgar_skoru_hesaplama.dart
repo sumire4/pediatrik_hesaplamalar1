@@ -111,6 +111,7 @@ class _ApgarSkoruHesaplamaScreenState extends State<ApgarSkoruHesaplamaScreen> {
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
+                        FocusScope.of(context).unfocus();
                         Navigator.of(context).pop();
                       },
                       child: const Text('Kapat'),

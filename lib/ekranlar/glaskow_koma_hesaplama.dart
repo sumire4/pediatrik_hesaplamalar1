@@ -155,9 +155,37 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
               onChanged: (val) => setState(() => _motorYaniti = val),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: _hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Hesaplama Bilgisi',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hesaplama Bilgisi'),
+                        content: const Text(
+                          'Glaskow Koma Skalası : Göz + Sözlü + Motor yanıt değerlerinin toplamıdır.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Kapat'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

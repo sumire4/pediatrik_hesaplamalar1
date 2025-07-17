@@ -125,10 +125,42 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
           child: Column(
             children: [
               _buildTextField('Kilo (kg)', _kiloController),
-              _buildTextField('TextBox1 (çarpan değeri)', _textbox1Controller),
-              ElevatedButton(
-                onPressed: _hesapla,
-                child: const Text('Hesapla'),
+              _buildTextField('Çarpan değeri', _textbox1Controller),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: _hesapla,
+                    child: const Text('Hesapla'),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    tooltip: 'Hesaplama Bilgisi',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Hesaplama Bilgisi'),
+                          content: const Text(
+                            'Yenidoğan Yüzey Alanı ve Mayi İhtiyacı :'
+                                'Yüzey Alanı (m²) = (Kilo × 0.05) + 0.05\n'
+                                'Günlük Mayi = TextBox1 × [(Kilo × 0.05) + 0.05]\n'
+                                'Saatlik Mayi = Günlük Mayi / 24'
+                                'şeklinde hesaplanır',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Kapat'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

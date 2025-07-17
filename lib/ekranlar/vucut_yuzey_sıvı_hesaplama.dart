@@ -131,9 +131,41 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: _hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Hesaplama Bilgisi',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hesaplama Bilgisi'),
+                        content: const Text(
+                          'Vücut Yüzey Alanı Ve Sıvı Miktarı: '
+                              'Yüzey Alanı (m²) = [(Kilo × 4) + 7] / (Kilo + 90)\n'
+                              'Saatlik Sıvı Miktarı = Yüzey Alanı × Çarpan\n'
+                              'Günlük Sıvı Miktarı = Saatlik Sıvı Miktarı × 24\n'
+                              'şeklinde hesaplanır',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Kapat'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 16),
           ],

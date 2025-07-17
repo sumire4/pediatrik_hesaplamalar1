@@ -84,6 +84,7 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
+                        FocusScope.of(context).unfocus();
                         Navigator.of(context).pop();
                       },
                       child: const Text('Kapat'),
@@ -132,9 +133,37 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: _hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Hesaplama Bilgisi',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hesaplama Bilgisi'),
+                        content: const Text(
+                          'Düzeltilmiş Sodyum : Sodyum + ((Glikoz – 100) / 100) × 1.6 şekilde hesaplanır.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Kapat'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             // Sonuç ekranda gösterilmiyor, sadece bottom sheet açılıyor.

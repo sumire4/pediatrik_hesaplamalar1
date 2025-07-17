@@ -128,9 +128,37 @@ class _TubulerFosforReabsorbsiyonuScreenState extends State<TubulerFosforReabsor
             const SizedBox(height: 16),
             _buildField(_plazmaFosforController, 'Plazma Fosfor (mg/dl)'),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: _hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Hesaplama Bilgisi',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hesaplama Bilgisi'),
+                        content: const Text(
+                          'Tübüler Fosfor : [1 - ((İdrarFosfor × PlazmaKreatinin) / (İdrarKreatinin × PlazmaFosfor))] × 100 şeklinde hesaplanır.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Kapat'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

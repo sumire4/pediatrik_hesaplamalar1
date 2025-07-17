@@ -122,9 +122,41 @@ class _EndotrakealTupHesaplamaScreenState extends State<EndotrakealTupHesaplamaS
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: _hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Hesaplama Bilgisi',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hesaplama Bilgisi'),
+                        content: const Text(
+                          'Yaşa Göre Endotrakeal Tüp Hesaplama :'
+                              'Kafsiz Tüp Çapı = (Yaş / 4) + 4\n'
+                              'Kafli Tüp Çapı = (Yaş / 4) + 3.5\n'
+                              'ETT Derinliği = Tüp Çapı × 3\n'
+                              'şeklinde hesaplanır.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Kapat'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

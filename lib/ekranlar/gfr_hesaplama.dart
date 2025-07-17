@@ -111,7 +111,7 @@ class _GfrHesaplamaScreenState extends State<GfrHesaplamaScreen> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () { Navigator.of(context).pop();FocusScope.of(context).unfocus();},
                       child: const Text('Kapat'),
                     ),
                   ],
@@ -190,9 +190,42 @@ class _GfrHesaplamaScreenState extends State<GfrHesaplamaScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: _hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Hesaplama Bilgisi',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hesaplama Bilgisi'),
+                        content: const Text(
+                          '24 saatlik idrar, plazma kreatinin, kilo ve idrar hacmine göre glomerüler filtrasyon hızı hesaplanır.\n'
+                          'Formüller:\n'
+                          '• Metrekare = (Kilo × 1.73) / 60\n\n'
+                          '• Kreatinin Klerensi = (İdrarKreatinin × Hacim) / (PlazmaKreatinin × 1440 × Metrekare)\n\n'
+                          '• Üre Klerensi = (İdrarÜre × Hacim) / (PlazmaÜre × 1440 × Metrekare)\n\n'
+                          '• GFR = (Kreatinin Klerensi + Üre Klerensi) / 2'
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Kapat'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 16),
           ],
