@@ -28,6 +28,18 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
 
     double boyMetre = boyCm / 100;
     double bmi = kilo / (boyMetre * boyMetre);
+    String bmiDegeri = bmi.toStringAsFixed(2);
+
+    String kategori = '';
+    if (bmi < 18.5) {
+      kategori = 'Zayıf';
+    } else if (bmi < 25) {
+      kategori = 'Normal';
+    } else if (bmi < 30) {
+      kategori = 'Fazla Kilolu';
+    } else {
+      kategori = 'Obez';
+    }
 
     final sonucText = 'Vücut Kitle İndeksi (BMI): ${bmi.toStringAsFixed(2)} kg/m²';
 
@@ -64,6 +76,15 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
                 Text(
                   sonucText,
                   style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  kategori,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -142,7 +163,11 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Vücut Kitle Endeksi : Kilo / (Boy²) şekilde hesaplanır.',
+                          'Vücut Kitle Endeksi : Kilo / (Boy²) şekilde hesaplanır.\n\n'
+                              '<20 : ZAYIF\n'
+                              '20-25 : NORMAL\n'
+                              '25-30 : FAZLA KİLOLU\n'
+                              '>30 : OBEZ',
                         ),
                         actions: [
                           TextButton(

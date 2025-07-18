@@ -208,12 +208,11 @@ class _GfrHesaplamaScreenState extends State<GfrHesaplamaScreen> {
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          '24 saatlik idrar, plazma kreatinin, kilo ve idrar hacmine göre glomerüler filtrasyon hızı hesaplanır.\n'
-                          'Formüller:\n'
-                          '• Metrekare = (Kilo × 1.73) / 60\n\n'
-                          '• Kreatinin Klerensi = (İdrarKreatinin × Hacim) / (PlazmaKreatinin × 1440 × Metrekare)\n\n'
-                          '• Üre Klerensi = (İdrarÜre × Hacim) / (PlazmaÜre × 1440 × Metrekare)\n\n'
-                          '• GFR = (Kreatinin Klerensi + Üre Klerensi) / 2'
+                          '24 saatlik idrar, plazma kreatinin, kilo ve idrar hacmine göre glomerüler filtrasyon hızı hesaplanır.\n\n'
+                          'Metrekare = (Kilo × 1.73) / 60\n\n'
+                          'Kreatinin Klerensi = (İdrarKreatinin × Hacim) / (PlazmaKreatinin × 1440 × Metrekare)\n\n'
+                          'Üre Klerensi = (İdrarÜre × Hacim) / (PlazmaÜre × 1440 × Metrekare)\n\n'
+                          'GFR = (Kreatinin Klerensi + Üre Klerensi) / 2'
                         ),
                         actions: [
                           TextButton(

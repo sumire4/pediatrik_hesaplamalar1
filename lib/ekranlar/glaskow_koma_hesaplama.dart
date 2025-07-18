@@ -15,35 +15,35 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
   int? _motorYaniti;
 
   final Map<String, int> gozYanitlari = {
-    'Spontan': 4,
-    'Sesle': 3,
-    'Ağrıyla': 2,
-    'Yok': 1,
+    'Spontan(4)': 4,
+    'Sesle(3)': 3,
+    'Ağrıyla(2)': 2,
+    'Yok(1)': 1,
   };
 
   final Map<String, int> sozluYanitlariYetiskin = {
-  'Yönelimli': 5,
-  'Konfüze': 4,
-  'Uygunsuz Kelimeler': 3,
-  'Anlaşılmaz Sesler': 2,
-  'Yok': 1,
+  'Yönelimli(5)': 5,
+  'Konfüze(4)': 4,
+  'Uygunsuz Kelimeler(3)': 3,
+  'Anlaşılmaz Sesler(2)': 2,
+  'Yok(1)': 1,
   };
 
   final Map<String, int> sozluYanitlariCocuk = {
-    'Gülümseme/Koos': 5,
-    'Ağlama ama teselli edilebilir': 4,
-    'Uygunsuz ağlama': 3,
-    'İnleme': 2,
-    'Yok': 1,
+    'Gülümseme/Koos(5)': 5,
+    'Ağlama ama teselli edilebilir(4)': 4,
+    'Uygunsuz ağlama(3)': 3,
+    'İnleme(2)': 2,
+    'Yok(1)': 1,
   };
 
   final Map<String, int> motorYanitlari = {
-    'Emirleri yerine getirir': 6,
-    'Ağrıyı lokalize eder': 5,
-    'Ağrıya karşı çekme': 4,
-    'Anormal fleksiyon (dekortike)': 3,
-    'Anormal ekstensiyon (deserebre)': 2,
-    'Yok': 1,
+    'Emirleri yerine getirir(6)': 6,
+    'Ağrıyı lokalize eder(5)': 5,
+    'Ağrıya karşı çekme(4)': 4,
+    'Anormal fleksiyon (dekortike)(3)': 3,
+    'Anormal ekstensiyon (deserebre)(2)': 2,
+    'Yok(1)': 1,
   };
 
   void _hesapla() {
@@ -171,9 +171,45 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                          'Glaskow Koma Skalası : Göz + Sözlü + Motor yanıt değerlerinin toplamıdır.',
+                        title: const Text('Glasgow Koma Skalası (GKS)'),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text('GÖZ AÇMA (E)', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('• 4: Spontan (kendiliğinden)'),
+                              Text('• 3: Sesle (konuşmayla)'),
+                              Text('• 2: Ağrılı uyaranla'),
+                              Text('• 1: Hiçbir şekilde açmaz'),
+                              SizedBox(height: 12),
+
+                              Text('SÖZEL YANIT (V)', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('• 5: Uygun (zaman, yer, kişi bilgisi doğru)'),
+                              Text('• 4: Karışık konuşma, yönelim bozuk'),
+                              Text('• 3: Uygun olmayan kelimeler'),
+                              Text('• 2: Anlamsız sesler'),
+                              Text('• 1: Yanıt yok'),
+                              SizedBox(height: 12),
+
+                              Text('MOTOR YANIT (M)', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('• 6: Emirlere uyar'),
+                              Text('• 5: Ağrılı uyarana lokalize eder'),
+                              Text('• 4: Ağrıdan uzaklaşır (çekme hareketi)'),
+                              Text('• 3: Anormal fleksiyon (dekortike)'),
+                              Text('• 2: Anormal ekstansiyon (deserebre)'),
+                              Text('• 1: Yanıt yok'),
+                              SizedBox(height: 12),
+
+                              Text('Hesaplama:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('Toplam Skor = Göz + Sözel + Motor (En az 3, en fazla 15)'),
+                              SizedBox(height: 12),
+
+                              Text('Skorun Yorumu:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('• 13–15: Hafif bilinç bozukluğu'),
+                              Text('• 9–12: Orta düzey bilinç bozukluğu'),
+                              Text('• ≤ 8: Ciddi bilinç bozukluğu (komaya yakın durum)'),
+                            ],
+                          ),
                         ),
                         actions: [
                           TextButton(
@@ -184,7 +220,8 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
                       ),
                     );
                   },
-                ),
+                )
+
               ],
             ),
           ],

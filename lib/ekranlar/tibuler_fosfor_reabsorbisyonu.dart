@@ -146,7 +146,7 @@ class _TubulerFosforReabsorbsiyonuScreenState extends State<TubulerFosforReabsor
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Tübüler Fosfor : [1 - ((İdrarFosfor × PlazmaKreatinin) / (İdrarKreatinin × PlazmaFosfor))] × 100 şeklinde hesaplanır.',
+                          '[1 - ((İdrarFosfor × PlazmaKreatinin) / (İdrarKreatinin × PlazmaFosfor))] × 100 şeklinde hesaplanır.',
                         ),
                         actions: [
                           TextButton(

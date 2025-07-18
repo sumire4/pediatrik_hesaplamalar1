@@ -169,7 +169,7 @@ class _GunlukKaloriHesaplamaScreenState extends State<GunlukKaloriHesaplamaScree
                         builder: (context) => AlertDialog(
                           title: const Text('Hesaplama Bilgisi'),
                           content: const Text(
-                            'Günlük Kalori : Kalori = [(Primer × 0.4) + (Veli̇p × 0.9) + (Dekstroz × 0.4) + (Mama × 0.7) + (Aminosol × 0.67) + (Suplement × 20) + (Cuprotein × 3.875)] × Kilo şeklinde hesaplanır.',
+                            '[(Primer × 0.4) + (Veli̇p × 0.9) + (Dekstroz × 0.4) + (Mama × 0.7) + (Aminosol × 0.67) + (Suplement × 20) + (Cuprotein × 3.875)] × Kilo şeklinde hesaplanır.',
                           ),
                           actions: [
                             TextButton(

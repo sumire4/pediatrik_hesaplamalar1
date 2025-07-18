@@ -151,7 +151,7 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Düzeltilmiş Kalsiyum: = Kalsiyum + (0.8 × (4 - Albümin)) şekilde hesaplanır.',
+                          'Kalsiyum + (0.8 × (4 - Albümin)) şekilde hesaplanır.',
                         ),
                         actions: [
                           TextButton(

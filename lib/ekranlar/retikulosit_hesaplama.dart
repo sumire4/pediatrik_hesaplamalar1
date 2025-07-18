@@ -150,7 +150,7 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Düzeltilmiş Retikulosit :  Retikülosit × (Hematokrit / 45) şekilde hesaplanır.',
+                          'Retikülosit × (Hematokrit / 45) şekilde hesaplanır.',
                         ),
                         actions: [
                           TextButton(

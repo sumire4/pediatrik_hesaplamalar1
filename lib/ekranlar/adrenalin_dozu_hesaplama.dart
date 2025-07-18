@@ -167,9 +167,9 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
                         builder: (context) => AlertDialog(
                           title: const Text('Hesaplama Bilgisi'),
                           content: const Text(
-                            'Adrenalin dozu: 0.01 mg/kg olacak şekilde hesaplanır.\n'
-                                'Hacim ise: 0.1 ml/kg olarak belirlenmiştir.\n\n'
-                                'Örneğin: 10 kg’lık bir hasta için doz 0.1 mg, hacim ise 1 ml olur.',
+                                'Doz (mg) = 0.01 × kilo\n'
+                                'Hacim (ml) = 0.1 × kilo\n'
+                                    'şeklinde hesaplanır',
                           ),
                           actions: [
                             TextButton(

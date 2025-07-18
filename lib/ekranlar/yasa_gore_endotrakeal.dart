@@ -26,10 +26,10 @@ class _EndotrakealTupHesaplamaScreenState extends State<EndotrakealTupHesaplamaS
     // Formüller:
     // Kafsiz Tüp Çapı = (Yaş / 4) + 4
     // Kafli Tüp Çapı = (Yaş / 4) + 3.5
-    // ETT Derinliği = Tüp Çapı × 3  (Burada tüp çapı olarak kaflı tüp çapını alıyoruz)
+    // ETT Derinliği = Tüp Çapı × 3  (Burada tüp çapı olarak kafsız tüp çapını alıyoruz)
     double kafsizTupCap = (yas / 4) + 4;
     double kafliTupCap = (yas / 4) + 3.5;
-    double ettDerinligi = kafliTupCap * 3;
+    double ettDerinligi = kafsizTupCap * 3;
 
     final sonucText =
         'Kafsız Tüp Çapı: ${kafsizTupCap.toStringAsFixed(2)} mm\n'
@@ -140,7 +140,6 @@ class _EndotrakealTupHesaplamaScreenState extends State<EndotrakealTupHesaplamaS
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Yaşa Göre Endotrakeal Tüp Hesaplama :'
                               'Kafsiz Tüp Çapı = (Yaş / 4) + 4\n'
                               'Kafli Tüp Çapı = (Yaş / 4) + 3.5\n'
                               'ETT Derinliği = Tüp Çapı × 3\n'

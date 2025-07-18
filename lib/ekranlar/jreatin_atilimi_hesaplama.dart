@@ -152,7 +152,7 @@ $yorum
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'İdrar çıkışı ve kreatinin değerlerine göre sıvı dengesi ve atılım hesaplanır.\n'
+                          'İdrar çıkışı ve kreatinin değerlerine göre sıvı dengesi ve atılım hesaplanır.\n\n'
                           '• Günlük GFR = (İdrarKreatinin × İdrarHacmi) / (PlazmaKreatinin × 1440)\n'
                           '• Vücut yüzey alanı = (Boy × Kilo) / 3600\n'
                           '• GFR normalleştirilmiş = GFR / 1.73',

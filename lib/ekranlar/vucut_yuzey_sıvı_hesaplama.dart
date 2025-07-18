@@ -149,7 +149,6 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Vücut Yüzey Alanı Ve Sıvı Miktarı: '
                               'Yüzey Alanı (m²) = [(Kilo × 4) + 7] / (Kilo + 90)\n'
                               'Saatlik Sıvı Miktarı = Yüzey Alanı × Çarpan\n'
                               'Günlük Sıvı Miktarı = Saatlik Sıvı Miktarı × 24\n'

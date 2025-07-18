@@ -56,7 +56,7 @@ class _ApgarSkoruHesaplamaScreenState extends State<ApgarSkoruHesaplamaScreen> {
     }
 
     int toplam = _gorusum! + _refleks! + _tonus! + _solunum! + _nabiz!;
-    int apgarSkoru = toplam - 5;
+    int apgarSkoru = toplam;
 
     final sonucText = 'Apgar Skoru: $apgarSkoru';
 
@@ -185,9 +185,39 @@ class _ApgarSkoruHesaplamaScreenState extends State<ApgarSkoruHesaplamaScreen> {
                 _nabiz = val;
               });
             }),
-            ElevatedButton(
-              onPressed: _hesapla,
-              child: const Text('Hesapla'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: _hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Hesaplama Bilgisi',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Hesaplama Bilgisi'),
+                        content: const Text(
+                          '7–10 puan: Normal (iyi durumda)\n'
+                          '4–6 puan: Orta derecede depresyon (yakın takip gerekir)\n'
+                          '0–3 puan: Ciddi durum, acil müdahale gerekir (resüsitasyon gibi)',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Kapat'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Text(

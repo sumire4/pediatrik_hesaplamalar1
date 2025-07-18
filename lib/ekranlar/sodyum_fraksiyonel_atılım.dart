@@ -168,7 +168,9 @@ class _SodyumFraksiyonelAtilimScreenState extends State<SodyumFraksiyonelAtilimS
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Sodyum Fraksiyonel Atılım : FE Na (%) = (İdrarNa × PlazmaKreatinin) / (İdrarKreatinin × PlazmaNa) × 100 şekilde hesaplanır.',
+                          '(İdrarNa × PlazmaKreatinin) / (İdrarKreatinin × PlazmaNa) × 100 şekilde hesaplanır.\n\n'
+                              '< %1 ise prerenal yetmezlik\n'
+                              '> %2 ise renal yetmezlik olabilir',
                         ),
                         actions: [
                           TextButton(

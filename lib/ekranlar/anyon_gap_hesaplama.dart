@@ -158,8 +158,8 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Anyon Gap: Sodyum – (Klor + Bikarbonat) şekilde hesaplanır.\n\n'
-                              'Normal Değerler : 9 - 17 mEq/L arasındadır.',
+                          'Sodyum – (Klor + Bikarbonat) şekilde hesaplanır.\n\n'
+                              'Normal Değerler : 9 - 17 mEq/L.',
                         ),
                         actions: [
                           TextButton(

@@ -151,7 +151,7 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Düzeltilmiş QT : QT × √(0.04 / RR) şekilde hesaplanır.\n\n'
+                          'QT × √(0.04 / RR) şekilde hesaplanır.\n\n'
                               'Normal Değerler : <0.44sn',
                         ),
                         actions: [

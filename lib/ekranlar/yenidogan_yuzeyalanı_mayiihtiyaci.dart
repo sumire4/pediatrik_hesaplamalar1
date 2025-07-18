@@ -144,7 +144,6 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
                         builder: (context) => AlertDialog(
                           title: const Text('Hesaplama Bilgisi'),
                           content: const Text(
-                            'Yenidoğan Yüzey Alanı ve Mayi İhtiyacı :'
                                 'Yüzey Alanı (m²) = (Kilo × 0.05) + 0.05\n'
                                 'Günlük Mayi = TextBox1 × [(Kilo × 0.05) + 0.05]\n'
                                 'Saatlik Mayi = Günlük Mayi / 24'

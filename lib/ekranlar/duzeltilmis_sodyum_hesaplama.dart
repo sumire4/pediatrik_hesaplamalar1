@@ -151,7 +151,7 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                       builder: (context) => AlertDialog(
                         title: const Text('Hesaplama Bilgisi'),
                         content: const Text(
-                          'Düzeltilmiş Sodyum : Sodyum + ((Glikoz – 100) / 100) × 1.6 şekilde hesaplanır.',
+                          'Düzeltilmiş Sodyum : Sodyum + [(Glikoz – 100) / 100)] × 1.6 şekilde hesaplanır.',
                         ),
                         actions: [
                           TextButton(
