@@ -1,16 +1,50 @@
-# pediatrik_hesaplamalar
+# Medikal Hesaplayıcı Uygulaması
 
-A new Flutter project.
+Flutter ile geliştirilmiş bu mobil uygulama, sağlık profesyonelleri için çeşitli medikal hesaplamaları hızlı ve güvenilir bir şekilde yapma imkânı sunar.
 
-## Getting Started
+Uygulama içerisinde yer alan bazı hesaplamalar:
 
-This project is a starting point for a Flutter application.
+- **Adrenalin Dozu**  
+  Seçilen konsantrasyona göre mg ve ml dozları otomatik hesaplar.
 
-A few resources to get you started if this is your first Flutter project:
+- **Anyon Gap**  
+  Sodyum, klor ve bikarbonat değerlerine göre anyon gap belirler.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Düzeltilmiş Kalsiyum**  
+  Kalsiyum ve albümin düzeylerine göre düzeltilmiş kalsiyumu hesaplar.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Glaskow Koma Skoru**  
+  Göz, sözlü ve motor yanıtlar seçilerek skor hesaplaması yapılır.
+  2 yaş altı çocuklar için **Glaskow** ölçeği özelleştirilmiştir.
+- **Fraksiyonel Sodyum Atılımı**  
+  Prerenal ve renal yetmezlik ayrımında yardımcı olur.
+
+- **GFR (Kreatinin Klerensi)**  
+  Kilo, idrar hacmi, kreatinin ve üre değerleri ile glomerüler filtrasyon oranı hesaplanır.
+
+## Ekran Görüntüleri
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/Screenshot_20250718_101108.jpg" width="200"/><br/>
+      <b>Adrenalin</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/Screenshot_20250718_101118.jpg" width="200"/><br/>
+      <b>Düzeltilmiş Kalsiyum</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/Screenshot_20250718_101129.jpg" width="200"/><br/>
+      <b>GFR</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/Screenshot_20250718_101158.jpg" width="200"/><br/>
+      <b>Glaskow</b>
+    </td>
+  </tr>
+</table>
+
+
