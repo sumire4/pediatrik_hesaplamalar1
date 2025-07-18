@@ -32,7 +32,7 @@ Uygulama içerisinde yer alan bazı hesaplamalar:
     </td>
     <td align="center">
       <img src="screenshots/Screenshot_20250718_101118.jpg" width="200"/><br/>
-      <b>Düzeltilmiş Kalsiyum</b>
+      <b></b>
     </td>
   </tr>
   <tr>
