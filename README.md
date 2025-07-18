@@ -28,7 +28,7 @@ Uygulama içerisinde yer alan bazı hesaplamalar:
   <tr>
     <td align="center">
       <img src="screenshots/Screenshot_20250718_101108.jpg" width="200"/><br/>
-      <b>Adrenalin</b>
+      <b></b>
     </td>
     <td align="center">
       <img src="screenshots/Screenshot_20250718_101118.jpg" width="200"/><br/>
@@ -38,11 +38,11 @@ Uygulama içerisinde yer alan bazı hesaplamalar:
   <tr>
     <td align="center">
       <img src="screenshots/Screenshot_20250718_101129.jpg" width="200"/><br/>
-      <b>GFR</b>
+      <b></b>
     </td>
     <td align="center">
       <img src="screenshots/Screenshot_20250718_101158.jpg" width="200"/><br/>
-      <b>Glaskow</b>
+      <b></b>
     </td>
   </tr>
 </table>
