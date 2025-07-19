@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApgarSkoruHesaplamaScreen extends StatefulWidget {
   const ApgarSkoruHesaplamaScreen({super.key});
@@ -47,7 +48,28 @@ class _ApgarSkoruHesaplamaScreenState extends State<ApgarSkoruHesaplamaScreen> {
     2: '>100/dk (2)',
   };
 
-  void _hesapla() {
+  List<String> _gecmisHesaplamalar = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGecmis();
+  }
+
+  Future<void> _loadGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _gecmisHesaplamalar = prefs.getStringList('gecmis_apgar') ?? [];
+    });
+  }
+
+  Future<void> _saveGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('gecmis_apgar', _gecmisHesaplamalar);
+  }
+
+
+  Future<void> _hesapla() async {
     if (_gorusum == null || _refleks == null || _tonus == null || _solunum == null || _nabiz == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Lütfen tüm parametreleri seçin.')),
@@ -59,6 +81,10 @@ class _ApgarSkoruHesaplamaScreenState extends State<ApgarSkoruHesaplamaScreen> {
     int apgarSkoru = toplam;
 
     final sonucText = 'Apgar Skoru: $apgarSkoru';
+
+    // Geçmişe ekle ve kaydet
+    _gecmisHesaplamalar.add(sonucText);
+    await _saveGecmis();
 
     showModalBottomSheet(
       context: context,
@@ -126,6 +152,85 @@ class _ApgarSkoruHesaplamaScreenState extends State<ApgarSkoruHesaplamaScreen> {
     );
   }
 
+  void _showGecmis() {
+    if (_gecmisHesaplamalar.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const Text(
+                  'Geçmiş Hesaplamalar',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _gecmisHesaplamalar.length,
+                    itemBuilder: (context, index) {
+                      final item = _gecmisHesaplamalar[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          title: Text(item),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.copy),
+                            tooltip: 'Kopyala',
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: item));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Geçmiş veri kopyalandı.')),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  icon: const Icon(Icons.delete_forever),
+                  label: const Text('Geçmişi Temizle'),
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove('gecmis_apgar');
+                    setState(() {
+                      _gecmisHesaplamalar.clear();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                    );
+                    Navigator.pop(context);
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Kapat'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   Widget _buildDropdown(String label, int? currentValue, Map<int, String> puanlar, void Function(int?) onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,6 +294,11 @@ class _ApgarSkoruHesaplamaScreenState extends State<ApgarSkoruHesaplamaScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
+                IconButton(
+                  icon: const Icon(Icons.history),
+                  tooltip: 'Geçmiş Hesaplamalar',
+                  onPressed: _showGecmis,
+                ),
                 ElevatedButton(
                   onPressed: _hesapla,
                   child: const Text('Hesapla'),

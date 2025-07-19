@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DuzeltilmisKalsiyumHesaplamaScreen extends StatefulWidget {
   const DuzeltilmisKalsiyumHesaplamaScreen({super.key});
@@ -14,7 +15,28 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
 
   String _sonuc = '';
 
-  void _hesapla() {
+  List<String> _gecmisHesaplamalar = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGecmis();
+  }
+
+  Future<void> _loadGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _gecmisHesaplamalar = prefs.getStringList('gecmis_kalsiyum') ?? [];
+    });
+  }
+
+  Future<void> _saveGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('gecmis_kalsiyum', _gecmisHesaplamalar);
+  }
+
+
+  Future<void> _hesapla() async {
     String kalsiyumText = _kalsiyumController.text.replaceAll(',', '.');
     String albuminText = _albuminController.text.replaceAll(',', '.');
 
@@ -32,6 +54,11 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
     double duzeltilmisKalsiyum = kalsiyum + (0.8 * (4 - albumin));
 
     final sonucText = 'Düzeltilmiş Kalsiyum: ${duzeltilmisKalsiyum.toStringAsFixed(2)} mg/dl';
+
+    // Geçmişe ekle ve kaydet
+    _gecmisHesaplamalar.add(sonucText);
+    await _saveGecmis();
+
 
     showModalBottomSheet(
       context: context,
@@ -97,10 +124,87 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
         );
       },
     );
-
     setState(() {
       _sonuc = sonucText;
     });
+  }
+
+  void _showGecmis() {
+    if (_gecmisHesaplamalar.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const Text(
+                  'Geçmiş Hesaplamalar',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _gecmisHesaplamalar.length,
+                    itemBuilder: (context, index) {
+                      final item = _gecmisHesaplamalar[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          title: Text(item),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.copy),
+                            tooltip: 'Kopyala',
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: item));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Geçmiş veri kopyalandı.')),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  icon: const Icon(Icons.delete_forever),
+                  label: const Text('Geçmişi Temizle'),
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove('gecmis_kalsiyum');
+                    setState(() {
+                      _gecmisHesaplamalar.clear();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                    );
+                    Navigator.pop(context);
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Kapat'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -137,6 +241,11 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
+                IconButton(
+                  icon: const Icon(Icons.history),
+                  tooltip: 'Geçmiş Hesaplamalar',
+                  onPressed: _showGecmis,
+                ),
                 ElevatedButton(
                   onPressed: _hesapla,
                   child: const Text('Hesapla'),

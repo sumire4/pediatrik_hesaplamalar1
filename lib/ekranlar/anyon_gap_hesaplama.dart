@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AnyonGapHesaplamaScreen extends StatefulWidget {
   const AnyonGapHesaplamaScreen({super.key});
@@ -12,10 +13,29 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
   final TextEditingController _sodyumController = TextEditingController();
   final TextEditingController _klorController = TextEditingController();
   final TextEditingController _bikarbonatController = TextEditingController();
-
   String _sonuc = '';
 
-  void _hesapla() {
+  List<String> _gecmisHesaplamalar = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGecmis();
+  }
+
+  Future<void> _loadGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _gecmisHesaplamalar = prefs.getStringList('gecmis_anyongap') ?? [];
+    });
+  }
+
+  Future<void> _saveGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('gecmis_anyongap', _gecmisHesaplamalar);
+  }
+
+  Future<void> _hesapla() async {
     String sodyumText = _sodyumController.text.replaceAll(',', '.');
     String klorText = _klorController.text.replaceAll(',', '.');
     String bikarbonatText = _bikarbonatController.text.replaceAll(',', '.');
@@ -34,6 +54,11 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
     double anyonGap = sodyum - (klor + bikarbonat);
 
     final sonucText = 'Anyon Gap: ${anyonGap.toStringAsFixed(2)} mEq/L';
+
+    // Geçmişe ekle ve kaydet
+    _gecmisHesaplamalar.add(sonucText);
+    await _saveGecmis();
+
 
     showModalBottomSheet(
       context: context,
@@ -101,6 +126,85 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
     );
   }
 
+  void _showGecmis() {
+    if (_gecmisHesaplamalar.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const Text(
+                  'Geçmiş Hesaplamalar',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _gecmisHesaplamalar.length,
+                    itemBuilder: (context, index) {
+                      final item = _gecmisHesaplamalar[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          title: Text(item),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.copy),
+                            tooltip: 'Kopyala',
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: item));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Geçmiş veri kopyalandı.')),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  icon: const Icon(Icons.delete_forever),
+                  label: const Text('Geçmişi Temizle'),
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove('gecmis_anyongap');
+                    setState(() {
+                      _gecmisHesaplamalar.clear();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                    );
+                    Navigator.pop(context);
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Kapat'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,6 +248,11 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
+                IconButton(
+                  icon: const Icon(Icons.history),
+                  tooltip: 'Geçmiş Hesaplamalar',
+                  onPressed: _showGecmis,
+                ),
                 ElevatedButton(
                   onPressed: _hesapla,
                   child: const Text('Hesapla'),

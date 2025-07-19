@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdrenalinHesaplamaScreen extends StatefulWidget {
   const AdrenalinHesaplamaScreen({super.key});
@@ -12,8 +13,30 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
   final TextEditingController _kiloController = TextEditingController();
   double? _selectedKonsantrasyon;
   String _sonuc = '';
-
   final List<double> _konsantrasyonlar = [0.25, 0.5, 1.0];
+  List<String> _gecmisHesaplamalar = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGecmis();
+  }
+
+  Future<void> _loadGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _gecmisHesaplamalar = prefs.getStringList('gecmis_adrenalin') ?? [];
+    });
+  }
+
+  Future<void> _saveGecmis() async {
+    final prefs = await SharedPreferences.getInstance();
+    // En fazla 10 giriş tut
+    if (_gecmisHesaplamalar.length > 10) {
+      _gecmisHesaplamalar = _gecmisHesaplamalar.sublist(_gecmisHesaplamalar.length - 10);
+    }
+    await prefs.setStringList('gecmis_adrenalin', _gecmisHesaplamalar);
+  }
 
   Future<void> _hesapla() async {
     FocusScope.of(context).unfocus();
@@ -38,6 +61,15 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
     final sonucText = 'Doz: ${dozMg.toStringAsFixed(2)} mg\n'
         'Hacim: ${hacimMl.toStringAsFixed(2)} ml\n'
         'Konsantrasyon: $_selectedKonsantrasyon mg/ml';
+
+    final now = DateTime.now();
+    final formatted = '${now.day.toString().padLeft(2, '0')}.'
+        '${now.month.toString().padLeft(2, '0')}.'
+        '${now.year} ${now.hour.toString().padLeft(2, '0')}:'
+        '${now.minute.toString().padLeft(2, '0')}';
+
+    _gecmisHesaplamalar.add('$formatted|$sonucText');
+    await _saveGecmis();
 
     showModalBottomSheet(
       context: context,
@@ -89,14 +121,94 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: () async {
-                        FocusScope.of(context).unfocus();
-                        await Future.delayed(const Duration(milliseconds: 200));
-                        if (mounted) Navigator.of(context).pop();
+                      onPressed: () {
+                        Navigator.of(context).pop();
                       },
                       child: const Text('Kapat'),
                     ),
                   ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showGecmis() {
+    if (_gecmisHesaplamalar.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const Text(
+                  'Geçmiş Hesaplamalar',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _gecmisHesaplamalar.length,
+                    itemBuilder: (context, index) {
+                      final entry = _gecmisHesaplamalar[index];
+                      final parts = entry.split('|');
+                      final tarih = parts[0];
+                      final sonuc = parts[1];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          title: Text(sonuc),
+                          subtitle: Text('Tarih: $tarih'),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.copy),
+                            tooltip: 'Kopyala',
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: sonuc));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Geçmiş veri kopyalandı.')),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  icon: const Icon(Icons.delete_forever),
+                  label: const Text('Geçmişi Temizle'),
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove('gecmis_adrenalin');
+                    setState(() {
+                      _gecmisHesaplamalar.clear();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                    );
+                    Navigator.pop(context);
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Kapat'),
                 ),
               ],
             ),
@@ -151,8 +263,13 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
                 children: [
+                  IconButton(
+                    icon: const Icon(Icons.history),
+                    tooltip: 'Geçmiş Hesaplamalar',
+                    onPressed: _showGecmis,
+                  ),
+                  const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _hesapla,
                     child: const Text('Hesapla'),
@@ -167,9 +284,9 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
                         builder: (context) => AlertDialog(
                           title: const Text('Hesaplama Bilgisi'),
                           content: const Text(
-                                'Doz (mg) = 0.01 × kilo\n'
+                            'Doz (mg) = 0.01 × kilo\n'
                                 'Hacim (ml) = 0.1 × kilo\n'
-                                    'şeklinde hesaplanır',
+                                'şeklinde hesaplanır',
                           ),
                           actions: [
                             TextButton(
@@ -183,7 +300,6 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -214,12 +330,6 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _sonuc,
-                style: const TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
