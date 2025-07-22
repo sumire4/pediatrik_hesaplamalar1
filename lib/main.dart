@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pediatrik_hesaplamalar/ekranlar/update_ekrani.dart';
 import 'ekranlar/adrenalin_dozu_hesaplama.dart';
 import 'ekranlar/anyon_gap_hesaplama.dart';
 import 'ekranlar/apgar_skoru_hesaplama.dart';
+import 'ekranlar/kullanım_ekrani.dart';
 import 'ekranlar/duzeltilmis_kalsiyum.dart';
 import 'ekranlar/duzeltilmis_qt_hesaplama.dart';
 import 'ekranlar/duzeltilmis_sodyum_hesaplama.dart';
@@ -21,6 +23,11 @@ import 'ekranlar/yenidogan_yuzeyalanı_mayiihtiyaci.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:install_plugin/install_plugin.dart'; // sadece Android için
+import 'dart:io';
 
 
 
@@ -54,6 +61,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> sikKullanilanlar = [];
+  int _titleTapCount = 0;
+  DateTime? _lastTapTime;
 
   @override
   void initState() {
@@ -243,6 +252,70 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
+  Future<void> kontrolEtVeGuncelle(BuildContext context) async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    final currentVersion = packageInfo.version;
+
+    final response = await http.get(
+      Uri.parse('https://api.github.com/repos/sumire4/pediatrik_hesaplamalar1/releases/latest'),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final latestVersion = jsonData['tag_name'];
+      final apkAsset = (jsonData['assets'] as List).firstWhere(
+            (a) => a['name'].toString().endsWith('.apk'),
+        orElse: () => null,
+      );
+
+      if (apkAsset == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Yeni sürüm bulundu ama APK dosyası yok')),
+        );
+        return;
+      }
+
+      if (currentVersion == latestVersion) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Uygulama zaten güncel')),
+        );
+      } else {
+        final downloadUrl = apkAsset['browser_download_url'];
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Yeni sürüm bulundu: $latestVersion. İndiriliyor...')),
+        );
+
+        if (Platform.isAndroid) {
+          // APK dosyasını indir
+          final tempDir = Directory.systemTemp;
+          final apkPath = '${tempDir.path}/update.apk';
+
+          final apkResponse = await http.get(Uri.parse(downloadUrl));
+          final file = File(apkPath);
+          await file.writeAsBytes(apkResponse.bodyBytes);
+
+          // Kurulumu başlat
+          try {
+            await InstallPlugin.installApk(apkPath, appId: packageInfo.packageName);
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Kurulum başlatılamadı: $e')),
+            );
+          }
+        } else {
+          // iOS kullanıcılarına yönlendirme
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Güncellemeler yalnızca Android’de desteklenmektedir.')),
+          );
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sürüm bilgisi alınamadı')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -250,9 +323,62 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pediatrik Hesaplamalar'),
+        title: GestureDetector(
+          onTap: () {
+            final now = DateTime.now();
+            if (_lastTapTime == null || now.difference(_lastTapTime!) > const Duration(seconds: 2)) {
+              _titleTapCount = 1;
+            } else {
+              _titleTapCount += 1;
+            }
+
+            _lastTapTime = now;
+
+            if (_titleTapCount == 5) {
+              _titleTapCount = 0; // sıfırla
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const KullanimLogEkrani()),
+              );
+            }
+          },
+          child: const Text('Pediatrik Hesaplamalar'),
+        ),
+
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.feedback_outlined, color: Colors.black),
+          tooltip: 'Geri Bildirim Gönder',
+          onPressed: () async {
+            final Uri emailLaunchUri = Uri(
+              scheme: 'mailto',
+              path: 'pediatrikhesaplamalar@gmail.com',
+              query: Uri.encodeFull(
+                'subject=Geri Bildirim - Pediatrik Hesaplamalar Uygulaması&body=Merhaba,\n\nUygulamayla ilgili geri bildiriminizi aşağıya yazabilirsiniz:\n\n',
+              ),
+            );
+
+            if (await canLaunchUrl(emailLaunchUri)) {
+              await launchUrl(emailLaunchUri);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('E-posta uygulaması açılamadı')),
+              );
+            }
+          },
+        ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.system_update),
+            tooltip: 'Güncellemeleri Kontrol Et',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UpdateScreen()),
+              );
+            },
+          ),
+
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () {
@@ -300,10 +426,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               );
             },
-
           ),
         ],
       ),
+
 
       body: ListView.builder(
         padding: const EdgeInsets.only(bottom: 80),

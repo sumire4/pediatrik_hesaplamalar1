@@ -127,7 +127,7 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
               controller: _carpanController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: 'Çarpan',
+                labelText: 'm²ye verilecek sıvı miktarı',
                 border: OutlineInputBorder(),
               ),
             ),
