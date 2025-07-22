@@ -309,6 +309,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
                   onPressed: _downloadAndInstall,
                 ),
               ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 24),
 
             if ((!hasUpdate || isDownloading))
               SizedBox(

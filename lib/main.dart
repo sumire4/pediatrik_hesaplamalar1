@@ -21,13 +21,7 @@ import 'ekranlar/vucut_yuzey_sıvı_hesaplama.dart';
 import 'ekranlar/yasa_gore_endotrakeal.dart';
 import 'ekranlar/yenidogan_yuzeyalanı_mayiihtiyaci.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:install_plugin/install_plugin.dart'; // sadece Android için
-import 'dart:io';
 
 
 
@@ -249,71 +243,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // En çok kullanılan ilk 3 öğeyi döndür
     return allItems.take(3).toList();
-  }
-
-
-  Future<void> kontrolEtVeGuncelle(BuildContext context) async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    final currentVersion = packageInfo.version;
-
-    final response = await http.get(
-      Uri.parse('https://api.github.com/repos/sumire4/pediatrik_hesaplamalar1/releases/latest'),
-    );
-
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final latestVersion = jsonData['tag_name'];
-      final apkAsset = (jsonData['assets'] as List).firstWhere(
-            (a) => a['name'].toString().endsWith('.apk'),
-        orElse: () => null,
-      );
-
-      if (apkAsset == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Yeni sürüm bulundu ama APK dosyası yok')),
-        );
-        return;
-      }
-
-      if (currentVersion == latestVersion) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Uygulama zaten güncel')),
-        );
-      } else {
-        final downloadUrl = apkAsset['browser_download_url'];
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Yeni sürüm bulundu: $latestVersion. İndiriliyor...')),
-        );
-
-        if (Platform.isAndroid) {
-          // APK dosyasını indir
-          final tempDir = Directory.systemTemp;
-          final apkPath = '${tempDir.path}/update.apk';
-
-          final apkResponse = await http.get(Uri.parse(downloadUrl));
-          final file = File(apkPath);
-          await file.writeAsBytes(apkResponse.bodyBytes);
-
-          // Kurulumu başlat
-          try {
-            await InstallPlugin.installApk(apkPath, appId: packageInfo.packageName);
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Kurulum başlatılamadı: $e')),
-            );
-          }
-        } else {
-          // iOS kullanıcılarına yönlendirme
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Güncellemeler yalnızca Android’de desteklenmektedir.')),
-          );
-        }
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sürüm bilgisi alınamadı')),
-      );
-    }
   }
 
   @override
