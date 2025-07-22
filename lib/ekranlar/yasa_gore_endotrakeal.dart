@@ -43,8 +43,9 @@ class _EndotrakealTupHesaplamaScreenState extends State<EndotrakealTupHesaplamaS
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
+        final bottomPadding = MediaQuery.of(context).viewPadding.bottom + 20;
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

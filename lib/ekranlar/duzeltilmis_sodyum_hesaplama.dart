@@ -143,10 +143,11 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
+        final bottomPadding = MediaQuery.of(context).viewPadding.bottom + 20;
         return SizedBox(
           height: MediaQuery.of(context).size.height * 0.6,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
             child: Column(
               children: [
                 const Text(

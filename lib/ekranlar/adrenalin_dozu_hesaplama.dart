@@ -78,8 +78,10 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
+        final bottomPadding = MediaQuery.of(context).viewPadding.bottom + 20; //navbar için
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding), //navbariçin
+          //padding: const EdgeInsets.all(20), geri aldım
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

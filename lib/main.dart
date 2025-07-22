@@ -306,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       body: ListView.builder(
-        padding: EdgeInsets.zero,
+        padding: const EdgeInsets.only(bottom: 80),
         itemCount: calculations.length + 1, // +1 resim için
         itemBuilder: (context, index) {
           if (index == 0) {
