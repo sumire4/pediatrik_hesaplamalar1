@@ -30,8 +30,8 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
     double yuzeyAlani = ((kilo * 4) + 7) / (kilo + 90);
 
     // Sıvı Miktarları
-    double saatlikSivi = yuzeyAlani * carpan;
-    double gunlukSivi = saatlikSivi * 24;
+    double gunlukSivi = yuzeyAlani * carpan;
+    double saatlikSivi = gunlukSivi / 24;
 
     final sonucText =
         'Vücut Yüzey Alanı: ${yuzeyAlani.toStringAsFixed(2)} m²\n'
@@ -45,8 +45,9 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
+        final bottomPadding = MediaQuery.of(context).viewPadding.bottom + 20;
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
