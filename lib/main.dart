@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pediatrik_hesaplamalar/ekranlar/geribildirim_geli%C5%9Fmi%C5%9F.dart';
 import 'package:pediatrik_hesaplamalar/ekranlar/update_ekrani.dart';
 import 'ekranlar/adrenalin_dozu_hesaplama.dart';
 import 'ekranlar/anyon_gap_hesaplama.dart';
 import 'ekranlar/apgar_skoru_hesaplama.dart';
+import 'ekranlar/feedback_list_ekrani.dart';
 import 'ekranlar/kullanım_ekrani.dart';
 import 'ekranlar/duzeltilmis_kalsiyum.dart';
 import 'ekranlar/duzeltilmis_qt_hesaplama.dart';
@@ -275,31 +277,27 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.feedback_outlined, color: Colors.black),
-          tooltip: 'Geri Bildirim Gönder',
-          onPressed: () async {
-            final Uri emailLaunchUri = Uri(
-              scheme: 'mailto',
-              path: 'pediatrikhesaplamalar@gmail.com',
-              query: Uri.encodeFull(
-                'subject=Geri Bildirim - Pediatrik Hesaplamalar Uygulaması&body=Merhaba,\n\nUygulamayla ilgili geri bildiriminizi aşağıya yazabilirsiniz:\n\n',
-              ),
+        leading: GestureDetector(
+          onLongPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const FeedbackListEkrani()),
             );
-
-            if (await canLaunchUrl(emailLaunchUri)) {
-              await launchUrl(emailLaunchUri);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('E-posta uygulaması açılamadı')),
-              );
-            }
           },
+          child: IconButton(
+            icon: const Icon(Icons.feedback_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FeedbackEkrani()),
+              );
+            },
+          ),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.system_update),
-            tooltip: 'Güncellemeleri Kontrol Et',
+            tooltip: 'Güncelleyici',
             onPressed: () {
               Navigator.push(
                 context,
