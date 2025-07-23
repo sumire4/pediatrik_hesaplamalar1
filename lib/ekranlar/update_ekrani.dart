@@ -29,6 +29,24 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
     _checkForUpdate();
   }
 
+  List<int> parseVersion(String version) {
+    return version.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+  }
+
+  bool areVersionsEqual(String v1, String v2) {
+    final a = parseVersion(v1);
+    final b = parseVersion(v2);
+
+    final maxLen = a.length > b.length ? a.length : b.length;
+
+    for (var i = 0; i < maxLen; i++) {
+      final ai = i < a.length ? a[i] : 0;
+      final bi = i < b.length ? b[i] : 0;
+      if (ai != bi) return false;
+    }
+    return true;
+  }
+
   Future<void> _checkForUpdate() async {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
@@ -40,7 +58,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        latestVersion = data['tag_name'];
+        latestVersion = (data['tag_name'] as String).replaceFirst(RegExp(r'^v'), '');
         releaseNotes = data['body'] ?? '';
         final apkAsset = (data['assets'] as List).firstWhere(
               (a) => a['name'].toString().endsWith('.apk'),
@@ -58,17 +76,21 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
 
         updateUrl = apkAsset['browser_download_url'];
 
-        if (currentVersion != latestVersion) {
-          setState(() {
-            statusMessage = 'Yeni sürüm mevcut: $latestVersion';
-            isLoading = false;
-            hasUpdate = true;
-          });
-        } else {
+        print('Current Version: $currentVersion');
+        print('Latest Version: $latestVersion');
+        print('Has Update: ${currentVersion != latestVersion}');
+
+        if (areVersionsEqual(currentVersion, latestVersion)) {
           setState(() {
             statusMessage = 'Uygulama zaten güncel.';
             isLoading = false;
             hasUpdate = false;
+          });
+        } else {
+          setState(() {
+            statusMessage = 'Yeni sürüm mevcut: $latestVersion';
+            isLoading = false;
+            hasUpdate = true;
           });
         }
       } else {
@@ -187,9 +209,9 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white, // Beyaz arka plan
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Uygulama Güncelleme'),
+        title: const Text('Güncelleyici'),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
@@ -210,40 +232,40 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
             _buildDownloadIconWithProgress(theme),
             const SizedBox(height: 32),
 
-            // Yeni sürüm mevcut, Değişiklikler başlığı ve release notes hizalı ve iç içe
             if (hasUpdate || releaseNotes.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (hasUpdate)
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      color: theme.colorScheme.secondaryContainer,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: theme.colorScheme.onSecondaryContainer,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Yeni sürüm mevcut: $latestVersion',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  color: theme.colorScheme.onSecondaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    color: theme.colorScheme.secondaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: theme.colorScheme.onSecondaryContainer,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              hasUpdate
+                                  ? 'Yeni sürüm mevcut: $latestVersion'
+                                  : 'Güncelsiniz',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: theme.colorScheme.onSecondaryContainer,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
 
                   if (hasUpdate && releaseNotes.isNotEmpty)
                     const SizedBox(height: 16),
@@ -298,7 +320,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.download),
-                  label: const Text('Güncellemeyi İndir ve Kur'),
+                  label: const Text(' İndir ve Kur'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
