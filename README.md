@@ -1,67 +1,42 @@
-# 🩺 Medikal Hesaplayıcı Uygulaması
+#  Pediatrik Hesaplamalar Mobil Uygulaması
 
-Flutter ile geliştirilmiş bu mobil uygulama, sağlık profesyonelleri için çeşitli medikal hesaplamaları hızlı ve güvenilir bir şekilde yapma imkânı sunar.
+**Pediatrik Hesaplamalar**, çocuk sağlığı alanında çalışan hekimler, hemşireler ve sağlık profesyonelleri için geliştirilmiş, yaygın kullanılan tıbbi hesaplamaları ve skorlamaları tek bir mobil uygulamada sunan yardımcı bir araçtır.
 
-Uygulama içerisinde yer alan bazı hesaplamalar:
+Bu uygulama, pediatri pratiğinde sıkça karşılaşılan klinik karar süreçlerini desteklemek amacıyla geliştirilmiştir.
 
-Adrenalin dozu hesaplama
+---
 
-Anyon gap hesaplama
+##  Genel Bilgilendirme
 
-Apgar skoru
+- Uygulama yalnızca **sağlık profesyonelleri** tarafından kullanılmak üzere tasarlanmıştır.
+- Hesaplamalar, ilgili tıbbi kaynaklara ve kılavuzlara uygun şekilde hazırlanmıştır.
+- **Herhangi bir klinik karar**, sadece bu uygulamaya dayalı olarak verilmemeli; hekim değerlendirmesi ile birlikte ele alınmalıdır.
 
-Düzeltilmiş kalsiyum
+---
 
-Düzeltilmiş sodyum
+##  İşlevleri
 
-Düzeltilmiş QT
+### Hesaplama ve Skorlama Araçları
 
-Düzeltilmiş retikülosit oranı
+Aşağıdaki tıbbi hesaplama ve değerlendirme araçları uygulama içerisinde yer almaktadır:
 
-Endotrakeal tüp çapı ve derinliği (yaşa göre)
+**Anyon Gap Hesaplama**
+**Apgar Skoru**
+**Glaskow Koma Skalası (GKS)**
+**Vücut Yüzey Alanı ve Günlük Sıvı İhtiyacı**
+**Glikoz İnfüzyon Hızı (GIR)**
+**QTc (Düzeltilmiş QT)**
+**Düzeltilmiş Kalsiyum Hesabı**
+**Periferik Yayma Değerlendirmesi**
 
-Fraksiyonel sodyum atılımı (FE Na)
+## Veri Güvenliği ve Sorumluluk
 
-Glaskow koma skoru (erişkin ve pediatrik)
+- Uygulama hiçbir kişisel veri ya da sağlık verisini kayıt altına almaz.
+- Tüm hesaplamalar cihaz üzerinde çalışır; internet bağlantısı yalnızca güncelleme kontrolü ve geri bildirim gönderimi için kullanılır.
+- Uygulama, **tanı koyma** veya **tedavi planlama** amacıyla kullanılmamalıdır. Yalnızca klinik karar süreçlerini destekleyici niteliktedir.
 
-Kreatinin ve üre klerensi (GFR)
+##  Ekran Görüntüleri
 
-Kreatinin atılımı ve sıvı dengesi
+| ![](screenshots/1.jpeg) | ![](screenshots/2.jpeg) | ![](screenshots/3.jpeg) |
 
-Tübüler fosfor reabsorbsiyonu
-
-Vücut kitle indeksi (BMI)
-
-Yüzey alanı ve sıvı ihtiyacı
-
-Günlük kalori hesaplama
-
-Yenidoğan sıvı ihtiyacı
-
-
-## Ekran Görüntüleri
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="screenshots/Screenshot_20250718_101108.jpg" width="200"/><br/>
-      <b></b>
-    </td>
-    <td align="center">
-      <img src="screenshots/Screenshot_20250718_101118.jpg" width="200"/><br/>
-      <b></b>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="screenshots/Screenshot_20250718_101129.jpg" width="200"/><br/>
-      <b></b>
-    </td>
-    <td align="center">
-      <img src="screenshots/Screenshot_20250718_101158.jpg" width="200"/><br/>
-      <b></b>
-    </td>
-  </tr>
-</table>
-
-
+| ![](screenshots/4.jpeg) | ![](screenshots/5.jpeg) |
