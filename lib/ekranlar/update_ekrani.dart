@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:install_plugin/install_plugin.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class UpdateScreen extends StatefulWidget {
   const UpdateScreen({super.key});
@@ -48,6 +50,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
   }
 
   Future<void> _checkForUpdate() async {
+    final loc = AppLocalizations.of(context)!;
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       currentVersion = packageInfo.version;
@@ -67,7 +70,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
 
         if (apkAsset == null) {
           setState(() {
-            statusMessage = 'Yeni sürüm bulundu ancak APK dosyası yok.';
+            statusMessage = loc.updateScreenNoApkFound;
             isLoading = false;
             hasUpdate = false;
           });
@@ -82,27 +85,27 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
 
         if (areVersionsEqual(currentVersion, latestVersion)) {
           setState(() {
-            statusMessage = 'Uygulama zaten güncel.';
+            statusMessage = loc.updateScreenUpToDate;
             isLoading = false;
             hasUpdate = false;
           });
         } else {
           setState(() {
-            statusMessage = 'Yeni sürüm mevcut: $latestVersion';
+            statusMessage = 'Y${loc.updateScreenNewVersionAvailable}$latestVersion';
             isLoading = false;
             hasUpdate = true;
           });
         }
       } else {
         setState(() {
-          statusMessage = 'Sürüm bilgisi alınamadı.';
+          statusMessage = loc.updateScreenStatusFetchingFailed;
           isLoading = false;
           hasUpdate = false;
         });
       }
     } catch (e) {
       setState(() {
-        statusMessage = 'Hata oluştu: $e';
+        statusMessage = '${loc.updateScreenStatusErrorOccurred}: $e';
         isLoading = false;
         hasUpdate = false;
       });
@@ -110,12 +113,13 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
   }
 
   Future<void> _downloadAndInstall() async {
+    final loc = AppLocalizations.of(context)!;
     if (updateUrl == null) return;
 
     setState(() {
       isDownloading = true;
       progress = 0;
-      statusMessage = 'İndiriliyor...';
+      statusMessage = loc.updateScreenDownloading;
     });
 
     try {
@@ -142,21 +146,21 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
           await file.writeAsBytes(bytes);
 
           setState(() {
-            statusMessage = 'İndirme tamamlandı, kurulum başlatılıyor...';
+            statusMessage = 'İşleniyor';
           });
 
           try {
             await InstallPlugin.installApk(apkPath, appId: (await PackageInfo.fromPlatform()).packageName);
           } catch (e) {
             setState(() {
-              statusMessage = 'Kurulum başlatılamadı: $e';
+              statusMessage = '${loc.updateScreenInstallError} $e';
               isDownloading = false;
             });
           }
         },
         onError: (e) {
           setState(() {
-            statusMessage = 'İndirme hatası: $e';
+            statusMessage = '${loc.updateScreenDownloadError} $e';
             isDownloading = false;
           });
         },
@@ -164,7 +168,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
       );
     } catch (e) {
       setState(() {
-        statusMessage = 'Hata: $e';
+        statusMessage = '${loc.updateScreenStatusErrorOccurred} $e';
         isDownloading = false;
       });
     }
@@ -207,11 +211,11 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Güncelleyici'),
+        title: Text(loc.updateScreenTitle),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
@@ -254,8 +258,8 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
                           Expanded(
                             child: Text(
                               hasUpdate
-                                  ? 'Yeni sürüm mevcut: $latestVersion'
-                                  : 'Güncelsiniz',
+                                  ? '${loc.updateScreenNewVersionAvailable} $latestVersion'
+                                  : loc.updateScreenUpToDate,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: theme.colorScheme.onSecondaryContainer,
                                 fontWeight: FontWeight.bold,
@@ -272,7 +276,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
 
                   if (releaseNotes.isNotEmpty)
                     Text(
-                      'Değişiklikler',
+                      loc.updateScreenReleaseNotesTitle,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurfaceVariant,
@@ -305,7 +309,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
 
             const SizedBox(height: 32),
 
-            Text('Mevcut Sürüm', style: theme.textTheme.titleMedium),
+            Text(loc.updateScreenCurrentVersion, style: theme.textTheme.titleMedium),
             Text(
               currentVersion,
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -320,7 +324,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.download),
-                  label: const Text(' İndir ve Kur'),
+                  label: Text(loc.updateScreenDownloadAndInstall),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
@@ -338,7 +342,7 @@ class _UpdateScreenState extends State<UpdateScreen> with TickerProviderStateMix
                 width: double.infinity,
                 child: FilledButton.tonal(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Kapat'),
+                  child: Text(loc.updateScreenClose),
                 ),
               ),
 

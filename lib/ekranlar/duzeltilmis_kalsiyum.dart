@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DuzeltilmisKalsiyumHesaplamaScreen extends StatefulWidget {
   const DuzeltilmisKalsiyumHesaplamaScreen({super.key});
@@ -44,16 +45,18 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
     double? albumin = double.tryParse(albuminText);
 
     if (kalsiyum == null || albumin == null) {
+      final loc = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanlara geçerli değerler girin.')),
+        SnackBar(content: Text(loc.validValueMessage)),
       );
       return;
     }
 
     // Formül: Düzeltilmiş Kalsiyum = Kalsiyum + (0.8 × (4 - Albümin))
     double duzeltilmisKalsiyum = kalsiyum + (0.8 * (4 - albumin));
+    final loc = AppLocalizations.of(context)!;
 
-    final sonucText = 'Düzeltilmiş Kalsiyum: ${duzeltilmisKalsiyum.toStringAsFixed(2)} mg/dl';
+    final sonucText = '${loc.correctedCalciumResult} ${duzeltilmisKalsiyum.toStringAsFixed(2)} mg/dl';
 
     // Geçmişe ekle ve kaydet
     _gecmisHesaplamalar.add(sonucText);
@@ -86,9 +89,9 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.resultTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -101,11 +104,11 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.copy),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.copiedToClipboard)),
                         );
                       },
                     ),
@@ -115,7 +118,7 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
                         FocusScope.of(context).unfocus();
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Kapat'),
+                      child: Text(loc.close),
                     ),
                   ],
                 ),
@@ -132,8 +135,9 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
 
   void _showGecmis() {
     if (_gecmisHesaplamalar.isEmpty) {
+      final loc = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+        SnackBar(content: Text(loc.noHistoryMessage)),
       );
       return;
     }
@@ -145,15 +149,16 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
+        final loc = AppLocalizations.of(context)!;
         return SizedBox(
           height: MediaQuery.of(context).size.height * 0.6,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const Text(
-                  'Geçmiş Hesaplamalar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.historyTooltip,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
@@ -167,11 +172,11 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
                           title: Text(item),
                           trailing: IconButton(
                             icon: const Icon(Icons.copy),
-                            tooltip: 'Kopyala',
+                            tooltip: loc.copy,
                             onPressed: () {
                               Clipboard.setData(ClipboardData(text: item));
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Geçmiş veri kopyalandı.')),
+                                SnackBar(content: Text(loc.resultCopied)),
                               );
                             },
                           ),
@@ -183,7 +188,7 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
                 const SizedBox(height: 8),
                 TextButton.icon(
                   icon: const Icon(Icons.delete_forever),
-                  label: const Text('Geçmişi Temizle'),
+                  label: Text(loc.clearHistory),
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('gecmis_kalsiyum');
@@ -191,14 +196,14 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
                       _gecmisHesaplamalar.clear();
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                      SnackBar(content: Text(loc.historyCleared)),
                     );
                     Navigator.pop(context);
                   },
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Kapat'),
+                  child: Text(loc.close),
                 ),
               ],
             ),
@@ -210,9 +215,10 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Düzeltilmiş Kalsiyum Hesaplama'),
+        title: Text(loc.clcTitle),
         centerTitle: true,
       ),
       body: Padding(
@@ -223,18 +229,18 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
             TextField(
               controller: _kalsiyumController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Kalsiyum (mg/dl)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.calciumLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _albuminController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Albümin (g/dl)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.albuminLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -244,29 +250,29 @@ class _DuzeltilmisKalsiyumHesaplamaScreenState extends State<DuzeltilmisKalsiyum
               children: [
                 IconButton(
                   icon: const Icon(Icons.history),
-                  tooltip: 'Geçmiş Hesaplamalar',
+                  tooltip: loc.historyTooltip,
                   onPressed: _showGecmis,
                 ),
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.calculateButton),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.infoTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                          'Kalsiyum + (0.8 × (4 - Albümin)) şekilde hesaplanır.',
+                        title: Text(loc.infoTooltip),
+                        content: Text(
+                          loc.calculationInfoCcal,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.close),
                           ),
                         ],
                       ),

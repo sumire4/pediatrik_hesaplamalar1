@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DuzeltilmisQTHesaplamaScreen extends StatefulWidget {
   const DuzeltilmisQTHesaplamaScreen({super.key});
@@ -37,6 +38,7 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
   }
 
   Future<void> _hesapla() async {
+    final loc = AppLocalizations.of(context)!;
     String qtText = _qtController.text.replaceAll(',', '.');
     String rrText = _rrController.text.replaceAll(',', '.');
 
@@ -45,14 +47,14 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
 
     if (qt == null || rr == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanlara geçerli değerler girin.')),
+        SnackBar(content: Text(loc.validValueMessage)),
       );
       return;
     }
 
-    double duzeltilmisQT = qt * sqrt(0.04 / rr);
+    double duzeltilmisQT = qt*(0.04) / sqrt(0.04*rr);
 
-    final sonucText = 'Düzeltilmiş QT: ${duzeltilmisQT.toStringAsFixed(3)} sn';
+    final sonucText = '${loc.correctedQTResult} ${duzeltilmisQT.toStringAsFixed(3)} sn';
 
     // Geçmişe ekle ve kaydet
     _gecmisHesaplamalar.add(sonucText);
@@ -83,9 +85,9 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.resultTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -98,11 +100,11 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.copyButton),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.resultCopied)),
                         );
                       },
                     ),
@@ -112,7 +114,7 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
                         FocusScope.of(context).unfocus();
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Kapat'),
+                      child: Text(loc.closeButton),
                     ),
                   ],
                 ),
@@ -129,9 +131,10 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
   }
 
   void _showGecmis() {
+    final loc = AppLocalizations.of(context)!;
     if (_gecmisHesaplamalar.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+        SnackBar(content: Text(loc.noHistoryMessage)),
       );
       return;
     }
@@ -150,9 +153,9 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
             padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding), //navbariçin
             child: Column(
               children: [
-                const Text(
-                  'Geçmiş Hesaplamalar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.historyTooltip,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
@@ -166,11 +169,11 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
                           title: Text(item),
                           trailing: IconButton(
                             icon: const Icon(Icons.copy),
-                            tooltip: 'Kopyala',
+                            tooltip: loc.copyButton,
                             onPressed: () {
                               Clipboard.setData(ClipboardData(text: item));
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Geçmiş veri kopyalandı.')),
+                                SnackBar(content: Text(loc.copiedToClipboard)),
                               );
                             },
                           ),
@@ -182,7 +185,7 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
                 const SizedBox(height: 8),
                 TextButton.icon(
                   icon: const Icon(Icons.delete_forever),
-                  label: const Text('Geçmişi Temizle'),
+                  label: Text(loc.clearHistory),
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('gecmis_qt');
@@ -190,14 +193,14 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
                       _gecmisHesaplamalar.clear();
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                      SnackBar(content: Text(loc.historyClearedMessage)),
                     );
                     Navigator.pop(context);
                   },
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Kapat'),
+                  child: Text(loc.closeButton),
                 ),
               ],
             ),
@@ -209,9 +212,10 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Düzeltilmiş QT Hesaplama'),
+        title: Text(loc.titleQT),
         centerTitle: true,
       ),
       body: Padding(
@@ -222,18 +226,18 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
             TextField(
               controller: _qtController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'QT (sn)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.qtLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _rrController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'RR (sn)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.rrLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -243,30 +247,29 @@ class _DuzeltilmisQTHesaplamaScreenState extends State<DuzeltilmisQTHesaplamaScr
               children: [
                 IconButton(
                   icon: const Icon(Icons.history),
-                  tooltip: 'Geçmiş Hesaplamalar',
+                  tooltip: loc.historyTooltip,
                   onPressed: _showGecmis,
                 ),
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.calculateButton),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.infoTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                          'QT × √(0.04 / RR) şekilde hesaplanır.\n\n'
-                              'Normal Değerler : <0.44sn',
+                        title: Text(loc.infoTooltip),
+                        content: Text(
+                         loc.calculationInfo,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.closeButton),
                           ),
                         ],
                       ),

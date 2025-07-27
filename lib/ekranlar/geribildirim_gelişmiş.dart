@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../config.dart';
 
@@ -16,6 +17,7 @@ class _FeedbackEkraniState extends State<FeedbackEkrani> {
   bool _isSending = false;
 
   Future<void> _gonder() async {
+    final loc = AppLocalizations.of(context)!;
     final mesaj = _controller.text.trim();
     if (mesaj.isEmpty) return;
 
@@ -33,7 +35,7 @@ class _FeedbackEkraniState extends State<FeedbackEkrani> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Geri bildiriminiz alındı")),
+          SnackBar(content: Text(loc.feedbackSuccess)),
         );
         _controller.clear();
       } else {
@@ -42,7 +44,7 @@ class _FeedbackEkraniState extends State<FeedbackEkrani> {
     } catch (e) {
       print("Gönderim hatası: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gönderim hatası: $e")),
+        SnackBar(content: Text("${loc.errorFetchingData} $e")),
       );
     } finally {
       setState(() => _isSending = false);
@@ -52,8 +54,9 @@ class _FeedbackEkraniState extends State<FeedbackEkrani> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Geri Bildirim")),
+      appBar: AppBar(title: Text(loc.feedbackScreenTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -61,9 +64,9 @@ class _FeedbackEkraniState extends State<FeedbackEkrani> {
             TextField(
               controller: _controller,
               maxLines: 5,
-              decoration: const InputDecoration(
-                hintText: "Geri bildiriminizi yazın...",
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: loc.feedbackHint,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -71,7 +74,7 @@ class _FeedbackEkraniState extends State<FeedbackEkrani> {
               onPressed: _isSending ? null : _gonder,
               child: _isSending
                   ? const CircularProgressIndicator()
-                  : const Text("Gönder"),
+                  : Text(loc.feedbackButton),
             ),
           ],
         ),

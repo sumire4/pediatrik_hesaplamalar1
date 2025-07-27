@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pediatrik_hesaplamalar/config.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FeedbackListEkrani extends StatefulWidget {
   const FeedbackListEkrani({super.key});
@@ -55,29 +56,30 @@ class _FeedbackListEkraniState extends State<FeedbackListEkrani> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     if (yukleniyor) {
       return Scaffold(
-        appBar:  AppBar(title: Text('Geri Bildirimler')),
+        appBar:  AppBar(title: Text(loc.feedbacksTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (hata != null) {
       return Scaffold(
-        appBar:  AppBar(title: const Text('Geri Bildirimler')),
+        appBar:  AppBar(title: Text(loc.feedbacksTitle)),
         body: Center(child: Text(hata!)),
       );
     }
 
     if (yorumlar.isEmpty) {
       return Scaffold(
-        appBar:  AppBar(title: const Text('Geri Bildirimler')),
-        body: const Center(child: Text('Hiç geri bildirim yok')),
+        appBar:  AppBar(title: Text(loc.feedbacksTitle)),
+        body: Center(child: Text(loc.noFeedbacks)),
       );
     }
 
     return Scaffold(
-      appBar:  AppBar(title: const Text('Geri Bildirimler')),
+      appBar:  AppBar(title: Text(loc.feedbacksTitle)),
       body: ListView.separated(
         padding: const EdgeInsets.all(12),
         itemCount: yorumlar.length,

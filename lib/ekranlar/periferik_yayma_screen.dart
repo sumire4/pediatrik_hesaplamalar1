@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class PeriferikYaymaScreen extends StatefulWidget {
@@ -16,16 +17,23 @@ class PeriferikYaymaScreen extends StatefulWidget {
 }
 
 class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
-  Map<String, int> counts = {
-    'Nötrofil': 0,
-    'Lenfosit': 0,
-    'Monosit': 0,
-    'Eozinofil': 0,
-    'Bazofil': 0,
-    'Band': 0,
-    'Blast': 0,
-    'Diğer': 0,
-  };
+  late Map<String, int> counts;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final loc = AppLocalizations.of(context)!;
+    counts = {
+      loc.cellTypeNeutrophil: 0,
+      loc.cellTypeLymphocyte: 0,
+      loc.cellTypeMonocyte: 0,
+      loc.cellTypeEosinophil: 0,
+      loc.cellTypeBasophil: 0,
+      loc.cellTypeBand: 0,
+      loc.cellTypeBlast: 0,
+      loc.cellTypeOther: 0,
+    };
+  }
 
   List<String> history = [];
 
@@ -71,6 +79,7 @@ class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
   }
 
   Future<void> _exportToPDF() async {
+    final loc = AppLocalizations.of(context)!;
     final pdfDoc = pw.Document();
 
     final totalCount = total;
@@ -88,7 +97,7 @@ class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Preferik Yayma Değerlendirme',
+                  loc.periferikTitle,
                   style: pw.TextStyle(
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
@@ -97,12 +106,12 @@ class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
                 ),
                 pw.SizedBox(height: 12),
                 pw.Text(
-                  'Toplam Hücre Sayısı: $totalCount',
+                  '${loc.hucresayisii} $totalCount',
                   style: pw.TextStyle(fontSize: 16, font: timesNewRoman),
                 ),
                 pw.SizedBox(height: 16),
                 pw.Table.fromTextArray(
-                  headers: ['Hücre Türü', 'Adet', 'Yüzde'],
+                  headers: [loc.hucreTuru, loc.adet, loc.yuzde],
                   headerStyle: pw.TextStyle(
                     fontWeight: pw.FontWeight.bold,
                     fontSize: 14,
@@ -138,16 +147,17 @@ class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final percentages = getPercentages();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Periferik Yayma Değerlendirme'),
+        title: Text(loc.periferikTitle),
       ),
       body: Column(
         children: [
           SwitchListTile(
-            title: const Text('Azaltma Modu'),
+            title: Text(loc.azaltmaModu),
             value: decreaseMode,
             onChanged: (val) {
               setState(() => decreaseMode = val);
@@ -158,7 +168,7 @@ class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
             child: Row(
               children: [
                 Text(
-                  'Toplam: $total',
+                  '${loc.toplama} $total',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: (total == 50 || total == 100) ? FontWeight.bold : FontWeight.normal,
@@ -167,9 +177,9 @@ class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
                 ),
 
                 const Spacer(),
-                ElevatedButton(onPressed: deleteLast, child: const Text('Son Sil')),
+                ElevatedButton(onPressed: deleteLast, child: Text(loc.sonSil)),
                 const SizedBox(width: 8),
-                ElevatedButton(onPressed: reset, child: const Text('Sıfırla')),
+                ElevatedButton(onPressed: reset, child:  Text(loc.sifirla)),
               ],
             ),
           ),
@@ -214,7 +224,7 @@ class _PeriferikYaymaScreenState extends State<PeriferikYaymaScreen> {
               width: double.infinity, // Buton genişliği tüm satır
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.picture_as_pdf),
-                label: const Text("PDF'ye Çevir"),
+                label: Text(loc.pdfyeCevir),
                 onPressed: _exportToPDF,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),

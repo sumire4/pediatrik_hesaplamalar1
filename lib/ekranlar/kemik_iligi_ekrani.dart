@@ -6,6 +6,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class KemikIligiScreen extends StatefulWidget {
   const KemikIligiScreen({super.key});
@@ -15,21 +17,29 @@ class KemikIligiScreen extends StatefulWidget {
 }
 
 class _KemikIligiScreenState extends State<KemikIligiScreen> {
-  Map<String, int> counts = {
-    'Normoblast': 0,
-    'Nötrofil': 0,
-    'Band': 0,
-    'Metamiyelosit': 0,
-    'Miyelosit': 0,
-    'Promiyelosit': 0,
-    'Blast': 0,
-    'Lenfosit': 0,
-    'Monosit': 0,
-    'Plazma hücresi': 0,
-    'Eozinofil': 0,
-    'Bazofil': 0,
-    'Diğer': 0,
-  };
+  late Map<String, int> counts;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final loc = AppLocalizations.of(context)!;
+
+    counts = {
+      loc.bmNormoblast: 0,
+      loc.bmNotrofil: 0,
+      loc.bmBand: 0,
+      loc.bmMetamiyelosit: 0,
+      loc.bmMiyelosit: 0,
+      loc.bmPromiyelosit: 0,
+      loc.bmBlast: 0,
+      loc.bmLenfosit: 0,
+      loc.bmMonosit: 0,
+      loc.bmPlazmaHucresi: 0,
+      loc.bmEozinofil: 0,
+      loc.bmBazofil: 0,
+      loc.bmDiger: 0,
+    };
+  }
 
   final GlobalKey _globalKey = GlobalKey();
   List<String> history = [];
@@ -75,6 +85,7 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
   }
 
   Future<void> _exportToPDF() async {
+    final loc = AppLocalizations.of(context)!;
     final pdfDoc = pw.Document();
 
     final totalCount = total;
@@ -92,7 +103,7 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Kemik İliği Değerlendirme',
+                  loc.pdfBaslik,
                   style: pw.TextStyle(
                     fontSize: 24,
                     fontWeight: pw.FontWeight.bold,
@@ -101,12 +112,12 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
                 ),
                 pw.SizedBox(height: 12),
                 pw.Text(
-                  'Toplam Hücre Sayısı: $totalCount',
+                  '${loc.hucresayisii} $totalCount',
                   style: pw.TextStyle(fontSize: 16, font: timesNewRoman),
                 ),
                 pw.SizedBox(height: 16),
                 pw.Table.fromTextArray(
-                  headers: ['Hücre Türü', 'Adet', 'Yüzde'],
+                  headers: [loc.hucreTuru, loc.adet, loc.yuzde],
                   headerStyle: pw.TextStyle(
                     fontWeight: pw.FontWeight.bold,
                     fontSize: 14,
@@ -145,11 +156,12 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final percentages = getPercentages();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kemik İliği Değerlendirme'),
+        title: Text(loc.kemikIligiTitle),
         // AppBar'daki PDF butonunu kaldırıyoruz
         // actions: [],
       ),
@@ -161,7 +173,7 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
               child: Column(
                 children: [
                   SwitchListTile(
-                    title: const Text('Azaltma Modu'),
+                    title: Text(loc.azaltmaModu),
                     value: decreaseMode,
                     onChanged: (val) {
                       setState(() => decreaseMode = val);
@@ -172,7 +184,7 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
                     child: Row(
                       children: [
                         Text(
-                          'Toplam: $total',
+                          '${loc.toplama} $total',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: (total == 50 || total == 100) ? FontWeight.bold : FontWeight.normal,
@@ -182,10 +194,10 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
 
                         const Spacer(),
                         ElevatedButton(
-                            onPressed: deleteLast, child: const Text('Son Sil')),
+                            onPressed: deleteLast, child: Text(loc.sonSil)),
                         const SizedBox(width: 8),
                         ElevatedButton(
-                            onPressed: reset, child: const Text('Sıfırla')),
+                            onPressed: reset, child: Text(loc.sifirla)),
                       ],
                     ),
                   ),
@@ -243,7 +255,7 @@ class _KemikIligiScreenState extends State<KemikIligiScreen> {
               width: double.infinity, // Buton genişliği tüm satır
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.picture_as_pdf),
-                label: const Text("PDF'ye Çevir"),
+                label: Text(loc.pdfyeCevir),
                 onPressed: _exportToPDF,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),

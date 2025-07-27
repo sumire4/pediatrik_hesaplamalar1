@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DuzeltilmisRetikulositHesaplamaScreen extends StatefulWidget {
   const DuzeltilmisRetikulositHesaplamaScreen({super.key});
@@ -15,6 +16,7 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
   String _sonuc = '';
 
   void _hesapla() {
+    final loc = AppLocalizations.of(context)!;
     String retikulositText = _retikulositController.text.replaceAll(',', '.');
     String hematokritText = _hematokritController.text.replaceAll(',', '.');
 
@@ -23,7 +25,7 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
 
     if (retikulosit == null || hematokrit == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanlara geçerli değerler girin.')),
+        SnackBar(content: Text(loc.validValueMessage)),
       );
       return;
     }
@@ -31,7 +33,7 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
     // Formül: Düzeltilmiş Retikülosit = Retikülosit × (Hematokrit / 45)
     double duzeltilmisRetikulosit = retikulosit * (hematokrit / 45);
 
-    final sonucText = 'Düzeltilmiş Retikülosit: ${duzeltilmisRetikulosit.toStringAsFixed(2)} %';
+    final sonucText = '${loc.resultText} ${duzeltilmisRetikulosit.toStringAsFixed(2)} %';
 
     showModalBottomSheet(
       context: context,
@@ -59,9 +61,9 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.resultDialogTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -74,11 +76,11 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.copyButton),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.copySuccess)),
                         );
                       },
                     ),
@@ -87,7 +89,7 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Kapat'),
+                      child: Text(loc.closeButton),
                     ),
                   ],
                 ),
@@ -105,9 +107,10 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Düzeltilmiş Retikülosit Hesaplama'),
+        title: Text(loc.retikulositTitle),
         centerTitle: true,
       ),
       body: Padding(
@@ -118,18 +121,18 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
             TextField(
               controller: _retikulositController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Retikülosit (%)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.retikulositFieldLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _hematokritController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Hematokrit (%)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.hematokritFieldLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -139,24 +142,24 @@ class _DuzeltilmisRetikulositHesaplamaScreenState extends State<DuzeltilmisRetik
               children: [
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.calculateButton),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.infoButtonTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                          'Retikülosit × (Hematokrit / 45) şekilde hesaplanır.',
+                        title: Text(loc.infoButtonTooltip),
+                        content: Text(
+                          loc.infoDialogContentrt,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.closeButton),
                           ),
                         ],
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DuzeltilmisSodyumHesaplamaScreen extends StatefulWidget {
   const DuzeltilmisSodyumHesaplamaScreen({super.key});
@@ -36,6 +37,7 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
   }
 
   Future<void> _hesapla() async {
+    final loc = AppLocalizations.of(context)!;
     String sodyumText = _sodyumController.text.replaceAll(',', '.');
     String glikozText = _glikozController.text.replaceAll(',', '.');
 
@@ -44,7 +46,7 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
 
     if (sodyum == null || glikoz == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanlara geçerli değerler girin.')),
+        SnackBar(content: Text(loc.validValueMessage)),
       );
       return;
     }
@@ -52,7 +54,7 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
     // Formül: Düzeltilmiş Sodyum = Sodyum + ((Glikoz – 100) / 100) × 1.6
     double duzeltilmisSodyum = sodyum + ((glikoz - 100) / 100) * 1.6;
 
-    final sonucText = 'Düzeltilmiş Sodyum: ${duzeltilmisSodyum.toStringAsFixed(2)} mmol/l';
+    final sonucText = '${loc.correctedCalciumResult} ${duzeltilmisSodyum.toStringAsFixed(2)} mmol/l';
 
     // Geçmişe ekle ve kaydet
     _gecmisHesaplamalar.add(sonucText);
@@ -83,9 +85,9 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.resultTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -98,11 +100,11 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.copyButton),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.resultCopied)),
                         );
                       },
                     ),
@@ -112,7 +114,7 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                         FocusScope.of(context).unfocus();
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Kapat'),
+                      child: Text(loc.closeButton),
                     ),
                   ],
                 ),
@@ -129,9 +131,10 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
   }
 
   void _showGecmis() {
+    final loc = AppLocalizations.of(context)!;
     if (_gecmisHesaplamalar.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+        SnackBar(content: Text(loc.noHistoryMessage)),
       );
       return;
     }
@@ -150,9 +153,9 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
             padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
             child: Column(
               children: [
-                const Text(
-                  'Geçmiş Hesaplamalar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.historyTooltip,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
@@ -166,11 +169,11 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                           title: Text(item),
                           trailing: IconButton(
                             icon: const Icon(Icons.copy),
-                            tooltip: 'Kopyala',
+                            tooltip: loc.copyButton,
                             onPressed: () {
                               Clipboard.setData(ClipboardData(text: item));
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Geçmiş veri kopyalandı.')),
+                                SnackBar(content: Text(loc.copiedToClipboard)),
                               );
                             },
                           ),
@@ -182,7 +185,7 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                 const SizedBox(height: 8),
                 TextButton.icon(
                   icon: const Icon(Icons.delete_forever),
-                  label: const Text('Geçmişi Temizle'),
+                  label: Text(loc.clearHistory),
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('gecmis_dsodyum');
@@ -190,14 +193,14 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
                       _gecmisHesaplamalar.clear();
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                      SnackBar(content: Text(loc.historyClearedMessage)),
                     );
                     Navigator.pop(context);
                   },
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Kapat'),
+                  child: Text(loc.closeButton),
                 ),
               ],
             ),
@@ -209,9 +212,10 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Düzeltilmiş Sodyum Hesaplama'),
+        title: Text(loc.titleSodium),
         centerTitle: true,
       ),
       body: Padding(
@@ -222,18 +226,18 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
             TextField(
               controller: _sodyumController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Sodyum (mmol/l)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.sodiumLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _glikozController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Glikoz (mg/dl)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.glucoseLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -243,30 +247,30 @@ class _DuzeltilmisSodyumHesaplamaScreenState extends State<DuzeltilmisSodyumHesa
               children: [
                 IconButton(
                   icon: const Icon(Icons.history),
-                  tooltip: 'Geçmiş Hesaplamalar',
+                  tooltip: loc.historyTooltip,
                   onPressed: _showGecmis,
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.calculateButton),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.infoTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                          'Düzeltilmiş Sodyum : Sodyum + [(Glikoz – 100) / 100)] × 1.6 şekilde hesaplanır.',
+                        title: Text(loc.infoTooltip),
+                        content: Text(
+                          loc.calculationInfoCs,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.closeButton),
                           ),
                         ],
                       ),

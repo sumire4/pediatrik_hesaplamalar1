@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VucutYuzeyAlaniVeSiviScreen extends StatefulWidget {
   const VucutYuzeyAlaniVeSiviScreen({super.key});
@@ -13,6 +14,7 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
   final TextEditingController _carpanController = TextEditingController();
 
   void _hesapla() {
+    final loc = AppLocalizations.of(context)!;
     String kiloText = _kiloController.text.replaceAll(',', '.');
     String carpanText = _carpanController.text.replaceAll(',', '.');
 
@@ -21,7 +23,7 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
 
     if (kilo == null || carpan == null || kilo <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanlara geçerli değerler girin.')),
+        SnackBar(content: Text(loc.bsaInvalidInput)),
       );
       return;
     }
@@ -34,9 +36,9 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
     double saatlikSivi = gunlukSivi / 24;
 
     final sonucText =
-        'Vücut Yüzey Alanı: ${yuzeyAlani.toStringAsFixed(2)} m²\n'
-        'Saatlik Sıvı Miktarı: ${saatlikSivi.toStringAsFixed(2)} cc/saat\n'
-        'Günlük Sıvı Miktarı: ${gunlukSivi.toStringAsFixed(2)} cc/gün';
+        '${loc.bsaResultText1} ${yuzeyAlani.toStringAsFixed(2)} m²\n'
+        '${loc.bsaResultcontext2} ${saatlikSivi.toStringAsFixed(2)} ${loc.bsaHour}\n'
+        '${loc.bsaResultText3} ${gunlukSivi.toStringAsFixed(2)} ${loc.bsaDay}';
 
     showModalBottomSheet(
       context: context,
@@ -64,9 +66,9 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.bsaResultTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -79,18 +81,18 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.bsaCopy),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.bsaCopiedMessage)),
                         );
                       },
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Kapat'),
+                      child: Text(loc.closeButton),
                     ),
                   ],
                 ),
@@ -104,9 +106,10 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vücut Yüzey Alanı ve Sıvı Miktarı'),
+        title: Text(loc.bsaTitle),
         centerTitle: true,
       ),
       body: Padding(
@@ -117,18 +120,18 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
             TextField(
               controller: _kiloController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Kilo (kg)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.bsaWeightLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _carpanController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'm²ye verilecek sıvı miktarı',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.bsaFluidPerM2Label,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -138,27 +141,24 @@ class _VucutYuzeyAlaniVeSiviScreenState extends State<VucutYuzeyAlaniVeSiviScree
               children: [
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.bsaCalculate),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.bmiTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                              'Yüzey Alanı (m²) = [(Kilo × 4) + 7] / (Kilo + 90)\n'
-                              'Saatlik Sıvı Miktarı = Yüzey Alanı × Çarpan\n'
-                              'Günlük Sıvı Miktarı = Saatlik Sıvı Miktarı × 24\n'
-                              'şeklinde hesaplanır',
+                        title: Text(loc.bmiInfoTitle),
+                        content: Text(
+                              loc.bsaInfoContent,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.closeButton),
                           ),
                         ],
                       ),

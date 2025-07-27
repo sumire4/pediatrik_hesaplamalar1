@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AnyonGapHesaplamaScreen extends StatefulWidget {
   const AnyonGapHesaplamaScreen({super.key});
@@ -52,8 +53,8 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
     }
 
     double anyonGap = sodyum - (klor + bikarbonat);
-
-    final sonucText = 'Anyon Gap: ${anyonGap.toStringAsFixed(2)} mEq/L';
+    final loc = AppLocalizations.of(context)!;
+    final sonucText = '${loc.resultPrefixAg} ${anyonGap.toStringAsFixed(2)} mEq/L';
 
     // Geçmişe ekle ve kaydet
     _gecmisHesaplamalar.add(sonucText);
@@ -67,6 +68,7 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
+        final loc = AppLocalizations.of(context)!;
         final bottomPadding = MediaQuery.of(context).viewPadding.bottom + 20;
         return Padding(
           padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
@@ -86,9 +88,9 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.resultTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -101,11 +103,11 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.copy),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.copiedToClipboard)),
                         );
                       },
                     ),
@@ -115,7 +117,7 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
                         FocusScope.of(context).unfocus();
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Kapat'),
+                      child: Text(loc.close),
                     ),
                   ],
                 ),
@@ -128,9 +130,11 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
   }
 
   void _showGecmis() {
+    final loc = AppLocalizations.of(context)!;
     if (_gecmisHesaplamalar.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Henüz geçmiş hesaplama yok.')),
+
+        SnackBar(content: Text(loc.noHistoryMessage)),
       );
       return;
     }
@@ -148,9 +152,9 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const Text(
-                  'Geçmiş Hesaplamalar',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.historyTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
@@ -164,7 +168,7 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
                           title: Text(item),
                           trailing: IconButton(
                             icon: const Icon(Icons.copy),
-                            tooltip: 'Kopyala',
+                            tooltip: loc.copy,
                             onPressed: () {
                               Clipboard.setData(ClipboardData(text: item));
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -180,7 +184,7 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
                 const SizedBox(height: 8),
                 TextButton.icon(
                   icon: const Icon(Icons.delete_forever),
-                  label: const Text('Geçmişi Temizle'),
+                  label: Text(loc.clearHistory),
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('gecmis_anyongap');
@@ -188,14 +192,14 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
                       _gecmisHesaplamalar.clear();
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Geçmiş temizlendi.')),
+                      SnackBar(content: Text(loc.historyCleared)),
                     );
                     Navigator.pop(context);
                   },
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Kapat'),
+                  child: Text(loc.close),
                 ),
               ],
             ),
@@ -208,9 +212,10 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Anyon Gap Hesaplama'),
+        title: Text(loc.anyonGapScreenTitle),
         centerTitle: true,
       ),
       body: Padding(
@@ -221,27 +226,27 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
             TextField(
               controller: _sodyumController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Sodyum (mEq/L)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.sodyumLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _klorController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Klor (mEq/L)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.klorLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _bikarbonatController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Bikarbonat (mEq/L)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.bikarbonatLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -251,30 +256,29 @@ class _AnyonGapHesaplamaScreenState extends State<AnyonGapHesaplamaScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.history),
-                  tooltip: 'Geçmiş Hesaplamalar',
+                  tooltip: loc.historyTooltip,
                   onPressed: _showGecmis,
                 ),
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.calculateButton),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.infoTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                          'Sodyum – (Klor + Bikarbonat) şekilde hesaplanır.\n\n'
-                              'Normal Değerler : 9 - 17 mEq/L.',
+                        title: Text(loc.calculationInfoTitle),
+                        content: Text(
+                          loc.calculationInfoContentAg,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.close),
                           ),
                         ],
                       ),

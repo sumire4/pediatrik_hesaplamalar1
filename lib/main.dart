@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pediatrik_hesaplamalar/ekranlar/geribildirim_geli%C5%9Fmi%C5%9F.dart';
 import 'package:pediatrik_hesaplamalar/ekranlar/update_ekrani.dart';
-import 'ekranlar/adrenalin_dozu_hesaplama.dart';
 import 'ekranlar/anyon_gap_hesaplama.dart';
 import 'ekranlar/apgar_skoru_hesaplama.dart';
 import 'ekranlar/feedback_list_ekrani.dart';
@@ -9,21 +8,17 @@ import 'ekranlar/kullanım_ekrani.dart';
 import 'ekranlar/duzeltilmis_kalsiyum.dart';
 import 'ekranlar/duzeltilmis_qt_hesaplama.dart';
 import 'ekranlar/duzeltilmis_sodyum_hesaplama.dart';
-import 'ekranlar/gfr_hesaplama.dart';
 import 'ekranlar/glaskow_koma_hesaplama.dart';
-import 'ekranlar/gunluk_kalori.dart';
-import 'ekranlar/jreatin_atilimi_hesaplama.dart';
 import 'ekranlar/kemik_iligi_ekrani.dart';
 import 'ekranlar/periferik_yayma_screen.dart';
 import 'ekranlar/retikulosit_hesaplama.dart';
-import 'ekranlar/sodyum_fraksiyonel_atılım.dart';
-import 'ekranlar/tibuler_fosfor_reabsorbisyonu.dart';
 import 'ekranlar/vucut_kitle_hesaplama.dart';
 import 'ekranlar/vucut_yuzey_sıvı_hesaplama.dart';
-import 'ekranlar/yasa_gore_endotrakeal.dart';
 import 'ekranlar/yenidogan_yuzeyalanı_mayiihtiyaci.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 
@@ -37,6 +32,26 @@ class MedicalCalculationApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('tr'),
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        // Cihaz diline göre desteklenen dil seçilir, yoksa varsayılan kullanılır.
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale?.languageCode) {
+            return supportedLocale;
+          }
+        }
+        return supportedLocales.first;
+      },
       debugShowCheckedModeBanner: false,
       title: 'Pediatrik Hesaplamalar',
       theme: ThemeData(
@@ -64,41 +79,27 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bu uygulama sadece sağlık profesyonelleri için geliştirilmiştir. Hesaplamalar bilgilendirme amaçlıdır ve klinik kararlarda tek başına kullanılmamalıdır.',
-            style: TextStyle(color: Colors.white),
+      Future.microtask(() {
+        final loc = AppLocalizations.of(context);
+        if (loc == null) return; // null ise hiçbir şey gösterme
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              loc.snackbarInfo,
+              style: const TextStyle(color: Colors.white),
+            ),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.grey,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
           ),
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.grey,
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.all(16),
-        ),
-      );
+        );
+      });
     });
+
     loadTopUsedCalculations();
   }
-  final List<String> calculations = const [
-    'Adrenalin Dozu Hesaplama',
-    'Anyon Gap Hesaplama',
-    'Apgar Skoru Hesaplama',
-    'Düzeltilmiş Kalsiyum',
-    'Düzeltilmiş Sodyum Hesaplama',
-    'Düzeltilmiş QT Hesaplama',
-    'Düzeltilmiş Retikülosit Hesaplama',
-    'Yaşa Göre Endotrakeal Tüp Hesaplama',
-    'Sodyum Fraksiyonel Atılım Hesaplama',
-    'GFR Hesaplama (Kreatinin Klerensi)',
-    'Glaskow Koma Skalası Hesaplama',
-    'Kreatinin Atılımı ve Sıvı Dengesi Hesaplama',
-    'Tübüler Fosfor Reabsorbsiyonu',
-    'Vücut Kitle İndeksi (BMI) Hesaplama',
-    'Vücut Yüzey Alanı ve Sıvı Miktarı Hesaplama',
-    'Günlük Kalori Hesaplama',
-    'Yenidoğan Yüzey Alanı ve Mayi İhtiyacı',
-    'Periferik Yayma Değerlendirme',
-    'Kemik İliği Değerlendirme'
-  ];
 
   Future<void> incrementUsage(String key) async {
     final prefs = await SharedPreferences.getInstance();
@@ -113,123 +114,80 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-
-
   Future<List<Map<String, dynamic>>> getTopUsedCalculations() async {
     final prefs = await SharedPreferences.getInstance();
+    final loc = AppLocalizations.of(context)!;
 
     final allItems = [
       {
-        'key': 'AdrenalinDozu',
-        'baslik': 'Adrenalin Dozu Hesaplama',
-        'icon': Icons.medical_services,
-        'widget': const AdrenalinHesaplamaScreen(),
-      },
-      {
         'key': 'AnyonGap',
-        'baslik': 'Anyon Gap Hesaplama',
+        'baslik': loc.calculationTitlesAnyonGap,
         'icon': Icons.calculate,
         'widget': const AnyonGapHesaplamaScreen(),
       },
       {
         'key': 'Apgar',
-        'baslik': 'Apgar Skoru Hesaplama',
+        'baslik': loc.calculationTitlesApgar,
         'icon': Icons.child_care,
         'widget': const ApgarSkoruHesaplamaScreen(),
       },
       {
         'key': 'DuzeltilmisKalsiyum',
-        'baslik': 'Düzeltilmiş Kalsiyum',
+        'baslik': loc.calculationTitlesCorrectedCalcium,
         'icon': Icons.bloodtype,
         'widget': const DuzeltilmisKalsiyumHesaplamaScreen(),
       },
       {
         'key': 'DuzeltilmisSodyum',
-        'baslik': 'Düzeltilmiş Sodyum Hesaplama',
+        'baslik': loc.calculationTitlesCorrectedSodium,
         'icon': Icons.opacity,
         'widget': const DuzeltilmisSodyumHesaplamaScreen(),
       },
       {
         'key': 'DuzeltilmisQT',
-        'baslik': 'Düzeltilmiş QT Hesaplama',
+        'baslik': loc.calculationTitlesCorrectedQT,
         'icon': Icons.timer,
         'widget': const DuzeltilmisQTHesaplamaScreen(),
       },
       {
         'key': 'DuzeltilmisRetikulosit',
-        'baslik': 'Düzeltilmiş Retikülosit Hesaplama',
+        'baslik': loc.calculationTitlesCorrectedReticulocyte,
         'icon': Icons.healing,
         'widget': const DuzeltilmisRetikulositHesaplamaScreen(),
       },
       {
-        'key': 'EndotrakealTup',
-        'baslik': 'Yaşa Göre Endotrakeal Tüp Hesaplama',
-        'icon': Icons.airline_seat_recline_extra,
-        'widget': const EndotrakealTupHesaplamaScreen(),
-      },
-      {
-        'key': 'SodyumFraksiyonelAtilim',
-        'baslik': 'Sodyum Fraksiyonel Atılım Hesaplama',
-        'icon': Icons.bubble_chart,
-        'widget': const SodyumFraksiyonelAtilimScreen(),
-      },
-      {
-        'key': 'GFR',
-        'baslik': 'GFR Hesaplama (Kreatinin Klerensi)',
-        'icon': Icons.water_damage,
-        'widget': const GfrHesaplamaScreen(),
-      },
-      {
         'key': 'Glaskow',
-        'baslik': 'Glaskow Koma Skalası Hesaplama',
+        'baslik': loc.calculationTitlesGlasgowComaScale,
         'icon': Icons.visibility,
         'widget': const GlaskowKomaSkalasiScreen(),
       },
       {
-        'key': 'KreatininSiviDengesi',
-        'baslik': 'Kreatinin Atılımı ve Sıvı Dengesi Hesaplama',
-        'icon': Icons.local_drink,
-        'widget': const KreatininSiviDengesiScreen(),
-      },
-      {
-        'key': 'TubulerFosforReabsorbsiyonu',
-        'baslik': 'Tübüler Fosfor Reabsorbsiyonu',
-        'icon': Icons.biotech,
-        'widget': const TubulerFosforReabsorbsiyonuScreen(),
-      },
-      {
         'key': 'BMI',
-        'baslik': 'Vücut Kitle İndeksi (BMI) Hesaplama',
+        'baslik': loc.calculationTitlesBMI,
         'icon': Icons.fitness_center,
         'widget': const BmiHesaplamaScreen(),
       },
       {
         'key': 'VucutYuzeyAlaniVeSivi',
-        'baslik': 'Vücut Yüzey Alanı ve Sıvı Miktarı Hesaplama',
+        'baslik': loc.calculationTitlesBodySurfaceAreaAndFluid,
         'icon': Icons.line_weight,
         'widget': const VucutYuzeyAlaniVeSiviScreen(),
       },
       {
-        'key': 'GunlukKalori',
-        'baslik': 'Günlük Kalori Hesaplama',
-        'icon': Icons.restaurant,
-        'widget': const GunlukKaloriHesaplamaScreen(),
-      },
-      {
         'key': 'YenidoganMayi',
-        'baslik': 'Yenidoğan Yüzey Alanı ve Mayi İhtiyacı',
+        'baslik': loc.calculationTitlesNewbornBodySurfaceArea,
         'icon': Icons.baby_changing_station,
-        'widget': const YenidoganMayiHesaplamaScreen(),
+        'widget': const YenidoganYuzeyAlaniScreen(),
       },
       {
         'key': 'PeriferikYayma',
-        'baslik': 'Periferik Yayma Değerlendirme',
+        'baslik': loc.calculationTitlesPeripheralSmear,
         'icon': Icons.analytics,
         'widget': const PeriferikYaymaScreen(),
       },
       {
         'key': 'KemikIligi',
-        'baslik': 'Kemik İliği Değerlendirme',
+        'baslik': loc.calculationTitlesBoneMarrowEvaluation,
         'icon': Icons.science,
         'widget': const KemikIligiScreen(),
       },
@@ -249,8 +207,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final double screenHeight = MediaQuery.of(context).size.height;
     final double imageHeight = screenHeight * 0.4; // Resim yüksekliği, ekranın %40'ı
+
+    final calculationKeys = {
+      loc.calculationTitlesAnyonGap: 'AnyonGap',
+      loc.calculationTitlesApgar: 'Apgar',
+      loc.calculationTitlesCorrectedCalcium: 'DuzeltilmisKalsiyum',
+      loc.calculationTitlesCorrectedSodium: 'DuzeltilmisSodyum',
+      loc.calculationTitlesCorrectedQT: 'DuzeltilmisQT',
+      loc.calculationTitlesCorrectedReticulocyte: 'DuzeltilmisRetikulosit',
+      loc.calculationTitlesGlasgowComaScale: 'GlaskowKomaSkalasi',
+      loc.calculationTitlesBMI: 'VücutKitleIndeksi',
+      loc.calculationTitlesBodySurfaceAreaAndFluid: 'VucutYuzeyAlaniVeSivi',
+      loc.calculationTitlesNewbornBodySurfaceArea: 'YenidoganMayi',
+      loc.calculationTitlesPeripheralSmear: 'PeriferikYayma',
+      loc.calculationTitlesBoneMarrowEvaluation: 'KemikIligi',
+    };
+
+    final List<String> calculations = [
+      loc.calculationTitlesAnyonGap,
+      loc.calculationTitlesApgar,
+      loc.calculationTitlesCorrectedCalcium,
+      loc.calculationTitlesCorrectedSodium,
+      loc.calculationTitlesCorrectedQT,
+      loc.calculationTitlesCorrectedReticulocyte,
+      loc.calculationTitlesGlasgowComaScale,
+      loc.calculationTitlesBMI,
+      loc.calculationTitlesBodySurfaceAreaAndFluid,
+      loc.calculationTitlesNewbornBodySurfaceArea,
+      loc.calculationTitlesPeripheralSmear,
+      loc.calculationTitlesBoneMarrowEvaluation,
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -273,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
           },
-          child: const Text('Pediatrik Hesaplamalar'),
+          child: Text(loc.appTitle),
         ),
 
         centerTitle: true,
@@ -297,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.system_update),
-            tooltip: 'Güncelleyici',
+            tooltip: loc.updateTooltip,
             onPressed: () {
               Navigator.push(
                 context,
@@ -313,37 +302,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Pediatrik Hesaplamalar'),
+                    title: Text(loc.appTitle),
                     content: SingleChildScrollView(
                       child: ListBody(
-                        children: const <Widget>[
+                        children: <Widget>[
                           Text(
-                            'Bu uygulama, pediatri alanında çalışan sağlık profesyonelleri için hazırlanmıştır. '
-                                'Yalnızca bilgi verme amacı taşır ve klinik karar verme sürecinde tek başına kullanılmamalıdır.',
+                            loc.infoDialogContent,
                             textAlign: TextAlign.justify,
                           ),
-                          SizedBox(height: 16),
-                          Text('© 2025 Tüm Hakları Saklıdır.', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 16),
+                          Text(loc.infoDialogCopyright, style: const TextStyle(fontSize: 12)),
                         ],
                       ),
                     ),
                     actions: <Widget>[
                       TextButton(
-                        child: const Text('KAPAT'),
+                        child: Text(loc.closeButton),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                       ),
                       TextButton.icon(
                         icon: const Icon(Icons.open_in_new),
-                        label: const Text('Proje Sayfası'),
+                        label: Text(loc.projectPage),
                         onPressed: () async {
                           final Uri url = Uri.parse('https://github.com/sumire4/pediatrik_hesaplamalar1');
                           if (await canLaunchUrl(url)) {
                             await launchUrl(url, mode: LaunchMode.externalApplication);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('GitHub sayfası açılamadı')),
+                              SnackBar(content: Text(loc.errorGithubOpen)),
                             );
                           }
                         },
@@ -375,18 +363,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    'Sık Kullanılanlar',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    loc.frequentlyUsed,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: sikKullanilanlar.isEmpty
-                      ? const Center(child: Text('Henüz sık kullanılan yok'))
+                      ? Center(child: Text(loc.noFrequentlyUsed))
                       : Row(
                     children: sikKullanilanlar.map((item) {
                       return Expanded(
@@ -471,171 +459,61 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 onTap: () async {
-                  // Burada eski if'ler yerine switch-case ya da başka yapı da olabilir
-                  if (calculation == 'Adrenalin Dozu Hesaplama') {
-                    await incrementUsage('AdrenalinDozu');
+                  String? key = calculationKeys[calculation];
+                  if (key == null) return;
+
+                  await incrementUsage(key);
+
+                  Widget? screen;
+                  switch (key) {
+                    case 'AnyonGap':
+                      screen = const AnyonGapHesaplamaScreen();
+                      break;
+                    case 'Apgar':
+                      screen = const ApgarSkoruHesaplamaScreen();
+                      break;
+                    case 'DuzeltilmisKalsiyum':
+                      screen = const DuzeltilmisKalsiyumHesaplamaScreen();
+                      break;
+                    case 'DuzeltilmisSodyum':
+                      screen = const DuzeltilmisSodyumHesaplamaScreen();
+                      break;
+                    case 'DuzeltilmisQT':
+                      screen = const DuzeltilmisQTHesaplamaScreen();
+                      break;
+                    case 'DuzeltilmisRetikulosit':
+                      screen = const DuzeltilmisRetikulositHesaplamaScreen();
+                      break;
+                    case 'GlaskowKomaSkalasi':
+                      screen = const GlaskowKomaSkalasiScreen();
+                      break;
+                    case 'VücutKitleIndeksi':
+                      screen = const BmiHesaplamaScreen();
+                      break;
+                    case 'VucutYuzeyAlaniVeSivi':
+                      screen = const VucutYuzeyAlaniVeSiviScreen();
+                      break;
+                    case 'YenidoganMayi':
+                      screen = const YenidoganYuzeyAlaniScreen();
+                      break;
+                    case 'PeriferikYayma':
+                      screen = const PeriferikYaymaScreen();
+                      break;
+                    case 'KemikIligi':
+                      screen = const KemikIligiScreen();
+                      break;
+                    default:
+                      return;
+                  }
+
+                  if (screen != null) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const AdrenalinHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Anyon Gap Hesaplama') {
-                    await incrementUsage('AnyonGap');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AnyonGapHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Apgar Skoru Hesaplama') {
-                    await incrementUsage('Apgar');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ApgarSkoruHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Düzeltilmiş Kalsiyum') {
-                    await incrementUsage('DuzeltilmisKalsiyum');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const DuzeltilmisKalsiyumHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Düzeltilmiş Sodyum Hesaplama') {
-                    await incrementUsage('DuzeltilmisSodyum');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const DuzeltilmisSodyumHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Düzeltilmiş QT Hesaplama') {
-                    await incrementUsage('DuzeltilmisQT');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const DuzeltilmisQTHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Düzeltilmiş Retikülosit Hesaplama') {
-                    await incrementUsage('DuzeltilmisRetikulosit');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const DuzeltilmisRetikulositHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Yaşa Göre Endotrakeal Tüp Hesaplama') {
-                    await incrementUsage('EndotrakealTup');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const EndotrakealTupHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Sodyum Fraksiyonel Atılım Hesaplama') {
-                    await incrementUsage('SodyumFraksiyonelAtilim');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const SodyumFraksiyonelAtilimScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'GFR Hesaplama (Kreatinin Klerensi)') {
-                    await incrementUsage('GFR');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const GfrHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Glaskow Koma Skalası Hesaplama') {
-                    await incrementUsage('GlaskowKomaSkalasi');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const GlaskowKomaSkalasiScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Kreatinin Atılımı ve Sıvı Dengesi Hesaplama') {
-                    await incrementUsage('KreatininSiviDengesi');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const KreatininSiviDengesiScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Tübüler Fosfor Reabsorbsiyonu') {
-                    await incrementUsage('TubulerFosforReabsorbsiyonu');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const TubulerFosforReabsorbsiyonuScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Vücut Kitle İndeksi (BMI) Hesaplama') {
-                    await incrementUsage('VücutKitleIndeksi');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BmiHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Vücut Yüzey Alanı ve Sıvı Miktarı Hesaplama') {
-                    await incrementUsage('VucutYuzeyAlaniVeSivi');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VucutYuzeyAlaniVeSiviScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Günlük Kalori Hesaplama') {
-                    await incrementUsage('GunlukKalori');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const GunlukKaloriHesaplamaScreen(),
-                      ),
-                    );
-                  } else if (calculation == 'Yenidoğan Yüzey Alanı ve Mayi İhtiyacı') {
-                    await incrementUsage('YenidoganMayi');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const YenidoganMayiHesaplamaScreen(),
-                      ),
+                      MaterialPageRoute(builder: (context) => screen!),
                     );
                   }
-                  else if(calculation == 'Periferik Yayma Değerlendirme')
-                    {
-                      await incrementUsage('PeriferikYayma');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PeriferikYaymaScreen(),
-                        ),
-                      );
-                    }
-                  else if(calculation == 'Kemik İliği Değerlendirme')
-                    {
-                      await incrementUsage('KemikIligi');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const KemikIligiScreen(),
-                        ),
-                      );
-                    }
                 },
+
               ),
             ),
           );

@@ -1,37 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class YenidoganMayiHesaplamaScreen extends StatefulWidget {
-  const YenidoganMayiHesaplamaScreen({super.key});
+class YenidoganYuzeyAlaniScreen extends StatefulWidget {
+  const YenidoganYuzeyAlaniScreen({super.key});
 
   @override
-  State<YenidoganMayiHesaplamaScreen> createState() => _YenidoganMayiHesaplamaScreenState();
+  State<YenidoganYuzeyAlaniScreen> createState() => _YenidoganYuzeyAlaniScreenState();
 }
 
-class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScreen> {
+class _YenidoganYuzeyAlaniScreenState extends State<YenidoganYuzeyAlaniScreen> {
   final TextEditingController _kiloController = TextEditingController();
-  final TextEditingController _textbox1Controller = TextEditingController();
 
   void _hesapla() {
+    final loc = AppLocalizations.of(context)!;
     String kiloText = _kiloController.text.replaceAll(',', '.');
-    String textbox1Text = _textbox1Controller.text.replaceAll(',', '.');
-
     double? kilo = double.tryParse(kiloText);
-    double? textbox1 = double.tryParse(textbox1Text);
 
-    if (kilo == null || textbox1 == null) {
+    if (kilo == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanlara geçerli değerler girin.')),
+        SnackBar(content: Text(loc.invalidWeightMessage)),
       );
       return;
     }
 
     double yuzeyAlani = (kilo * 0.05) + 0.05;
-    double gunlukMayi = textbox1 * yuzeyAlani;
-    double saatlikMayi = gunlukMayi / 24;
-
-    final sonucText =
-        'Yüzey Alanı: ${yuzeyAlani.toStringAsFixed(2)} m²\nGünlük Mayi: ${gunlukMayi.toStringAsFixed(2)} cc/gün\nSaatlik Mayi: ${saatlikMayi.toStringAsFixed(2)} cc/saat';
+    final sonucText = '${loc.sonucTxt}${yuzeyAlani.toStringAsFixed(2)} m²';
 
     showModalBottomSheet(
       context: context,
@@ -59,8 +53,8 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
+                Text(
+                  loc.calculationResult,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -74,11 +68,11 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.copy),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.copiedMessage)),
                         );
                       },
                     ),
@@ -87,7 +81,7 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Kapat'),
+                      child: Text(loc.close),
                     ),
                   ],
                 ),
@@ -100,6 +94,7 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
   }
 
   Widget _buildTextField(String label, TextEditingController controller) {
+    final loc = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextField(
@@ -115,9 +110,10 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Yenidoğan Mayi İhtiyacı'),
+        title: Text(loc.yenidoganTitle),
         centerTitle: true,
       ),
       body: Padding(
@@ -125,35 +121,31 @@ class _YenidoganMayiHesaplamaScreenState extends State<YenidoganMayiHesaplamaScr
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _buildTextField('Kilo (kg)', _kiloController),
-              _buildTextField('Çarpan değeri', _textbox1Controller),
+              _buildTextField(loc.kiloLabel, _kiloController),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ElevatedButton(
                     onPressed: _hesapla,
-                    child: const Text('Hesapla'),
+                    child: Text(loc.calculate),
                   ),
                   const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.info_outline),
-                    tooltip: 'Hesaplama Bilgisi',
+                    tooltip: loc.tooltipInfo,
                     onPressed: () {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('Hesaplama Bilgisi'),
-                          content: const Text(
-                                'Yüzey Alanı (m²) = (Kilo × 0.05) + 0.05\n'
-                                'Günlük Mayi = TextBox1 × [(Kilo × 0.05) + 0.05]\n'
-                                'Saatlik Mayi = Günlük Mayi / 24'
-                                'şeklinde hesaplanır',
+                          title: Text(loc.infoDialogTitle),
+                          content: Text(
+                            loc.infoDialogContentSa,
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Kapat'),
+                              child: Text(loc.close),
                             ),
                           ],
                         ),

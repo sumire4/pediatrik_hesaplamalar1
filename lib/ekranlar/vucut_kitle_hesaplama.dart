@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BmiHesaplamaScreen extends StatefulWidget {
   const BmiHesaplamaScreen({super.key});
@@ -13,6 +14,7 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
   final TextEditingController _kiloController = TextEditingController();
 
   void _hesapla() {
+    final loc = AppLocalizations.of(context)!;
     String boyText = _boyController.text.replaceAll(',', '.');
     String kiloText = _kiloController.text.replaceAll(',', '.');
 
@@ -21,7 +23,7 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
 
     if (boyCm == null || kilo == null || boyCm == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanlara geçerli değerler girin.')),
+        SnackBar(content: Text(loc.bmiInvalidInput)),
       );
       return;
     }
@@ -32,16 +34,16 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
 
     String kategori = '';
     if (bmi < 18.5) {
-      kategori = 'Zayıf';
+      kategori = loc.bmiCategoryUnderweight;
     } else if (bmi < 25) {
-      kategori = 'Normal';
+      kategori = loc.bmiCategoryNormal;
     } else if (bmi < 30) {
-      kategori = 'Fazla Kilolu';
+      kategori = loc.bmiCategoryOverweight;
     } else {
-      kategori = 'Obez';
+      kategori = loc.bmiCategoryObese;
     }
 
-    final sonucText = 'Vücut Kitle İndeksi (BMI): ${bmi.toStringAsFixed(2)} kg/m²';
+    final sonucText = '${loc.bmiResultText} ${bmi.toStringAsFixed(2)} kg/m²';
 
     showModalBottomSheet(
       context: context,
@@ -69,9 +71,9 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
                     ),
                   ),
                 ),
-                const Text(
-                  'Hesaplama Sonucu',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  loc.bmiResultTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -93,18 +95,18 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.copy),
-                      label: const Text('Kopyala'),
+                      label: Text(loc.copyButton),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: sonucText));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sonuç panoya kopyalandı.')),
+                          SnackBar(content: Text(loc.bmiCopiedMessage)),
                         );
                       },
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Kapat'),
+                      child: Text(loc.closeButton),
                     ),
                   ],
                 ),
@@ -118,9 +120,10 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vücut Kitle İndeksi (BMI) Hesaplama'),
+        title: Text(loc.bmiTitle),
         centerTitle: true,
       ),
       body: Padding(
@@ -131,17 +134,17 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
             TextField(
               controller: _boyController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Boy (cm)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.bmiHeightLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _kiloController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Kilo (kg)',
+              decoration: InputDecoration(
+                labelText: loc.bmiWeightLabel,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -152,28 +155,24 @@ class _BmiHesaplamaScreenState extends State<BmiHesaplamaScreen> {
               children: [
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.bmiCalculate),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.bmiTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Hesaplama Bilgisi'),
-                        content: const Text(
-                          'Vücut Kitle Endeksi : Kilo / (Boy²) şekilde hesaplanır.\n\n'
-                              '<20 : ZAYIF\n'
-                              '20-25 : NORMAL\n'
-                              '25-30 : FAZLA KİLOLU\n'
-                              '>30 : OBEZ',
+                        title: Text(loc.bmiTooltip),
+                        content: Text(
+                          loc.bmiInfoContent,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.closeButton),
                           ),
                         ],
                       ),

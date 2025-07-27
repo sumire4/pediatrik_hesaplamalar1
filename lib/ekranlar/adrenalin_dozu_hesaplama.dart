@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class AdrenalinHesaplamaScreen extends StatefulWidget {
   const AdrenalinHesaplamaScreen({super.key});
@@ -45,8 +48,9 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
     double? kilo = double.tryParse(girilenKilo);
 
     if (kilo == null || _selectedKonsantrasyon == null) {
+      final loc = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen geçerli kilo ve konsantrasyon girin.')),
+        SnackBar(content: Text(loc.pleaseEnterValidWeightAndConcentration)),
       );
       return;
     }
@@ -222,9 +226,10 @@ class _AdrenalinHesaplamaScreenState extends State<AdrenalinHesaplamaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Adrenalin Dozu Hesaplama'),
+        title: Text(loc.adrenalinScreenTitle),
         centerTitle: true,
       ),
       body: Padding(

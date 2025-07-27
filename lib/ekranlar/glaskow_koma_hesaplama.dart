@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GlaskowKomaSkalasiScreen extends StatefulWidget {
   const GlaskowKomaSkalasiScreen({super.key});
@@ -14,48 +15,60 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
   int? _sozluYaniti;
   int? _motorYaniti;
 
-  final Map<String, int> gozYanitlari = {
-    'Spontan(4)': 4,
-    'Sesle(3)': 3,
-    'Ağrıyla(2)': 2,
-    'Yok(1)': 1,
-  };
+  late Map<String, int> gozYanitlari;
+  late Map<String, int> sozluYanitlariYetiskin;
+  late Map<String, int> sozluYanitlariCocuk;
+  late Map<String, int> motorYanitlari;
 
-  final Map<String, int> sozluYanitlariYetiskin = {
-  'Yönelimli(5)': 5,
-  'Konfüze(4)': 4,
-  'Uygunsuz Kelimeler(3)': 3,
-  'Anlaşılmaz Sesler(2)': 2,
-  'Yok(1)': 1,
-  };
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final loc = AppLocalizations.of(context)!;
 
-  final Map<String, int> sozluYanitlariCocuk = {
-    'Gülümseme/Koos(5)': 5,
-    'Ağlama ama teselli edilebilir(4)': 4,
-    'Uygunsuz ağlama(3)': 3,
-    'İnleme(2)': 2,
-    'Yok(1)': 1,
-  };
+    gozYanitlari = {
+      loc.gksEyeSpontan: 4,
+      loc.gksEyeSesle: 3,
+      loc.gksEyeAgrili: 2,
+      loc.gksEyeYok: 1,
+    };
 
-  final Map<String, int> motorYanitlari = {
-    'Emirleri yerine getirir(6)': 6,
-    'Ağrıyı lokalize eder(5)': 5,
-    'Ağrıya karşı çekme(4)': 4,
-    'Anormal fleksiyon (dekortike)(3)': 3,
-    'Anormal ekstensiyon (deserebre)(2)': 2,
-    'Yok(1)': 1,
-  };
+    sozluYanitlariYetiskin = {
+      loc.gksVerbalYonelimli: 5,
+      loc.gksVerbalKonfuze: 4,
+      loc.gksVerbalUygunsuzKelimeler: 3,
+      loc.gksVerbalAnlasilmazSesler: 2,
+      loc.gksVerbalYok: 1,
+    };
+
+    sozluYanitlariCocuk = {
+      loc.gksVerbalGulumsme: 5,
+      loc.gksVerbalAglamaTeselli: 4,
+      loc.gksVerbalUygunsuzAglama: 3,
+      loc.gksVerbalInleme: 2,
+      loc.gksVerbalYok: 1,
+    };
+
+    motorYanitlari = {
+      loc.gksMotorEmirler: 6,
+      loc.gksMotorAgriLokalize: 5,
+      loc.gksMotorAgriCekme: 4,
+      loc.gksMotorDekortike: 3,
+      loc.gksMotorDeserebre: 2,
+      loc.gksMotorYok: 1,
+    };
+  }
 
   void _hesapla() {
+    final loc = AppLocalizations.of(context)!;
     if (_gozYaniti == null || _sozluYaniti == null || _motorYaniti == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen tüm alanları seçin.')),
+        SnackBar(content: Text(loc.gksMissingFields)),
       );
       return;
     }
 
     int toplamSkor = _gozYaniti! + _sozluYaniti! + _motorYaniti!;
-    String sonuc = 'Glaskow Koma Skoru: $toplamSkor';
+    String sonuc = '${loc.gksScoreResult} $toplamSkor';
 
     showModalBottomSheet(
       context: context,
@@ -80,9 +93,9 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
                 ),
               ),
             ),
-            const Text(
-              'Hesaplama Sonucu',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              loc.gksResultTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Text(
@@ -94,7 +107,7 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
               alignment: Alignment.centerRight,
               child: ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Kapat'),
+                child: Text(loc.closeButton),
               ),
             ),
           ],
@@ -105,11 +118,12 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final Map<String, int> sozluMap = _isChild ? sozluYanitlariCocuk : sozluYanitlariYetiskin;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Glaskow Koma Skalası Hesaplama'),
+        title: Text(loc.gksTitle),
         centerTitle: true,
       ),
       body: Padding(
@@ -117,15 +131,15 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
         child: ListView(
           children: [
             SwitchListTile(
-              title: const Text('2 yaş altı (modifiye ölçek)'),
+              title: Text(loc.gksIsChildSwitch),
               value: _isChild,
               onChanged: (val) => setState(() => _isChild = val),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: 'Göz Yanıtı',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.gksEyeResponse,
+                border: const OutlineInputBorder(),
               ),
               items: gozYanitlari.entries
                   .map((e) => DropdownMenuItem(value: e.value, child: Text(e.key)))
@@ -134,9 +148,9 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: 'Sözlü Yanıtı',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.gksVerbalResponse,
+                border: const OutlineInputBorder(),
               ),
               items: sozluMap.entries
                   .map((e) => DropdownMenuItem(value: e.value, child: Text(e.key)))
@@ -145,9 +159,9 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: 'Motor Yanıtı',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: loc.gksMotorResponse,
+                border: const OutlineInputBorder(),
               ),
               items: motorYanitlari.entries
                   .map((e) => DropdownMenuItem(value: e.value, child: Text(e.key)))
@@ -161,67 +175,66 @@ class _GlaskowKomaSkalasiScreenState extends State<GlaskowKomaSkalasiScreen> {
               children: [
                 ElevatedButton(
                   onPressed: _hesapla,
-                  child: const Text('Hesapla'),
+                  child: Text(loc.gksCalculate),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.info_outline),
-                  tooltip: 'Hesaplama Bilgisi',
+                  tooltip: loc.gksInfoTooltip,
                   onPressed: () {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Glasgow Koma Skalası (GKS)'),
+                        title: Text(loc.gksInfoTitle),
                         content: SingleChildScrollView(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text('GÖZ AÇMA (E)', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text('• 4: Spontan (kendiliğinden)'),
-                              Text('• 3: Sesle (konuşmayla)'),
-                              Text('• 2: Ağrılı uyaranla'),
-                              Text('• 1: Hiçbir şekilde açmaz'),
-                              SizedBox(height: 12),
+                            children: [
+                              Text(loc.gksInfoEyeTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(loc.gksInfoEye4),
+                              Text(loc.gksInfoEye3),
+                              Text(loc.gksInfoEye2),
+                              Text(loc.gksInfoEye1),
+                              const SizedBox(height: 12),
 
-                              Text('SÖZEL YANIT (V)', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text('• 5: Uygun (zaman, yer, kişi bilgisi doğru)'),
-                              Text('• 4: Karışık konuşma, yönelim bozuk'),
-                              Text('• 3: Uygun olmayan kelimeler'),
-                              Text('• 2: Anlamsız sesler'),
-                              Text('• 1: Yanıt yok'),
-                              SizedBox(height: 12),
+                              Text(loc.gksInfoVerbalTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(loc.gksInfoVerbal5),
+                              Text(loc.gksInfoVerbal4),
+                              Text(loc.gksInfoVerbal3),
+                              Text(loc.gksInfoVerbal2),
+                              Text(loc.gksInfoVerbal1),
+                              const SizedBox(height: 12),
 
-                              Text('MOTOR YANIT (M)', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text('• 6: Emirlere uyar'),
-                              Text('• 5: Ağrılı uyarana lokalize eder'),
-                              Text('• 4: Ağrıdan uzaklaşır (çekme hareketi)'),
-                              Text('• 3: Anormal fleksiyon (dekortike)'),
-                              Text('• 2: Anormal ekstansiyon (deserebre)'),
-                              Text('• 1: Yanıt yok'),
-                              SizedBox(height: 12),
+                              Text(loc.gksInfoMotorTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(loc.gksInfoMotor6),
+                              Text(loc.gksInfoMotor5),
+                              Text(loc.gksInfoMotor4),
+                              Text(loc.gksInfoMotor3),
+                              Text(loc.gksInfoMotor2),
+                              Text(loc.gksInfoMotor1),
+                              const SizedBox(height: 12),
 
-                              Text('Hesaplama:', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text('Toplam Skor = Göz + Sözel + Motor (En az 3, en fazla 15)'),
-                              SizedBox(height: 12),
+                              Text(loc.gksInfoCalculationTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(loc.gksInfoCalculationDesc),
+                              const SizedBox(height: 12),
 
-                              Text('Skorun Yorumu:', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text('• 13–15: Hafif bilinç bozukluğu'),
-                              Text('• 9–12: Orta düzey bilinç bozukluğu'),
-                              Text('• ≤ 8: Ciddi bilinç bozukluğu (komaya yakın durum)'),
+                              Text(loc.gksInfoScoreInterpretationTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text(loc.gksInfoScoreInterpretation13_15),
+                              Text(loc.gksInfoScoreInterpretation9_12),
+                              Text(loc.gksInfoScoreInterpretation8less),
                             ],
                           ),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Kapat'),
+                            child: Text(loc.closeButton),
                           ),
                         ],
                       ),
                     );
                   },
                 )
-
               ],
             ),
           ],
