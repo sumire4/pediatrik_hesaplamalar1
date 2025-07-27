@@ -20,20 +20,19 @@ Bu uygulama, pediatri pratiğinde sıkça karşılaşılan klinik karar süreçl
 
 Aşağıdaki tıbbi hesaplama ve değerlendirme araçları uygulama içerisinde yer almaktadır:
 
--**Anyon Gap Hesaplama**
--**Apgar Skoru**
--**Glaskow Koma Skalası (GKS)**
--**Vücut Yüzey Alanı ve Günlük Sıvı İhtiyacı**
--**Glikoz İnfüzyon Hızı (GIR)**
--**QTc (Düzeltilmiş QT)**
--**Düzeltilmiş Kalsiyum Hesabı**
--**Periferik Yayma Değerlendirmesi**
--**Düzeltilmiş Sodyum Hesabı**
--**Düzeltilmiş Retikülosit Hesabı**
--**Vücut Kitle Endeksi(BMI) Hesabı**
--**Yenidoğan Vücut Yüzey Alanı Hesabı**
--**Kemik İliği Değerlendirmesi**
-
+- Anyon Gap Hesaplama  
+- Apgar Skoru  
+- Glaskow Koma Skalası (GKS)  
+- Vücut Yüzey Alanı ve Günlük Sıvı İhtiyacı  
+- Glikoz İnfüzyon Hızı (GIR)  
+- QTc (Düzeltilmiş QT)  
+- Düzeltilmiş Kalsiyum Hesabı  
+- Periferik Yayma Değerlendirmesi  
+- Düzeltilmiş Sodyum Hesabı  
+- Düzeltilmiş Retikülosit Hesabı  
+- Vücut Kitle Endeksi (BMI) Hesabı  
+- Yenidoğan Vücut Yüzey Alanı Hesabı  
+- Kemik İliği Değerlendirmesi
 
 ## Veri Güvenliği ve Sorumluluk
 
