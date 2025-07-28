@@ -20,19 +20,48 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
-
 void main() {
   runApp(const MedicalCalculationApp());
 }
 
-class MedicalCalculationApp extends StatelessWidget {
+class MedicalCalculationApp extends StatefulWidget {
   const MedicalCalculationApp({super.key});
+
+  @override
+  State<MedicalCalculationApp> createState() => _MedicalCalculationAppState();
+}
+
+class _MedicalCalculationAppState extends State<MedicalCalculationApp> {
+  Locale _locale = const Locale('tr'); // Varsayılan dil Türkçe
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLanguage();
+  }
+
+  // Kaydedilmiş dili yükle
+  Future<void> _loadSavedLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLanguage = prefs.getString('selected_language') ?? 'tr';
+    setState(() {
+      _locale = Locale(savedLanguage);
+    });
+  }
+
+  // Dil değiştirme fonksiyonu
+  Future<void> changeLanguage(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_language', languageCode);
+    setState(() {
+      _locale = Locale(languageCode);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
+      locale: _locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -44,13 +73,8 @@ class MedicalCalculationApp extends StatelessWidget {
         Locale('tr'),
       ],
       localeResolutionCallback: (locale, supportedLocales) {
-        // Cihaz diline göre desteklenen dil seçilir, yoksa varsayılan kullanılır.
-        for (var supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale?.languageCode) {
-            return supportedLocale;
-          }
-        }
-        return supportedLocales.first;
+        // Seçilen dili kullan
+        return _locale;
       },
       debugShowCheckedModeBanner: false,
       title: 'Pediatrik Hesaplamalar',
@@ -58,13 +82,15 @@ class MedicalCalculationApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: HomeScreen(onLanguageChange: changeLanguage),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(String) onLanguageChange;
+
+  const HomeScreen({super.key, required this.onLanguageChange});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -81,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.microtask(() {
         final loc = AppLocalizations.of(context);
-        if (loc == null) return; // null ise hiçbir şey gösterme
+        if (loc == null) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -193,15 +219,12 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     ];
 
-
-    // Sayılara göre büyükten küçüğe sırala
     allItems.sort((a, b) {
       final countA = prefs.getInt(a['key'] as String) ?? 0;
       final countB = prefs.getInt(b['key'] as String) ?? 0;
       return countB.compareTo(countA);
     });
 
-    // En çok kullanılan ilk 3 öğeyi döndür
     return allItems.take(3).toList();
   }
 
@@ -209,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final double screenHeight = MediaQuery.of(context).size.height;
-    final double imageHeight = screenHeight * 0.4; // Resim yüksekliği, ekranın %40'ı
+    final double imageHeight = screenHeight * 0.4;
 
     final calculationKeys = {
       loc.calculationTitlesAnyonGap: 'AnyonGap',
@@ -255,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _lastTapTime = now;
 
             if (_titleTapCount == 5) {
-              _titleTapCount = 0; // sıfırla
+              _titleTapCount = 0;
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const KullanimLogEkrani()),
@@ -264,7 +287,6 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           child: Text(loc.appTitle),
         ),
-
         centerTitle: true,
         leading: GestureDetector(
           onLongPress: () {
@@ -294,7 +316,6 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () {
@@ -316,6 +337,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     actions: <Widget>[
+                      // Dil değiştirme butonu
+                      TextButton.icon(
+                        icon: const Icon(Icons.language),
+                        label: Text(
+                            Localizations.localeOf(context).languageCode == 'tr'
+                                ? 'Switch to English'
+                                : 'Türkçeye Geç'
+                        ),
+                        onPressed: () {
+                          final currentLanguage = Localizations.localeOf(context).languageCode;
+                          final newLanguage = currentLanguage == 'tr' ? 'en' : 'tr';
+                          widget.onLanguageChange(newLanguage);
+                          Navigator.of(context).pop(); // Dialog'u kapat
+                        },
+                      ),
                       TextButton(
                         child: Text(loc.closeButton),
                         onPressed: () {
@@ -344,11 +380,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-
-
       body: ListView.builder(
         padding: const EdgeInsets.only(bottom: 80),
-        itemCount: calculations.length + 1, // +1 resim için
+        itemCount: calculations.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Column(
@@ -397,10 +431,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context,
                                   MaterialPageRoute(builder: (context) => selected['widget']),
                                 );
-                                await loadTopUsedCalculations(); // Sık kullanılanlar güncellensin
+                                await loadTopUsedCalculations();
                               },
                               child: SizedBox(
-                                height: 120, // Sabit yükseklik (kendine göre ayarlayabilirsin)
+                                height: 120,
                                 child: Padding(
                                   padding: const EdgeInsets.all(12.0),
                                   child: Column(
@@ -411,8 +445,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Text(
                                         item['baslik'],
                                         textAlign: TextAlign.center,
-                                        maxLines: 2,             // Maksimum 2 satır
-                                        overflow: TextOverflow.ellipsis, // Taşan kısmı ... yap
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(fontSize: 14),
                                       ),
                                     ],
@@ -425,14 +459,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }).toList(),
                   ),
-
                 ),
                 const SizedBox(height: 16),
               ],
             );
           }
-
-
 
           final calculation = calculations[index - 1];
           return Padding(
@@ -443,8 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               elevation: 1,
               child: ListTile(
-                contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 title: Text(
                   calculation,
                   style: const TextStyle(fontWeight: FontWeight.w500),
@@ -513,7 +543,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 },
-
               ),
             ),
           );
